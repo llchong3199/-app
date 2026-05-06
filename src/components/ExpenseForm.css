@@ -14,9 +14,9 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-bottom: 0;
 }
 
 .form-field {
