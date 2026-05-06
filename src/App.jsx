@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useExpenses } from './hooks/useExpenses'
 import { useSuccessSound } from './hooks/useSuccessSound'
 import { ExpenseForm } from './components/ExpenseForm'
@@ -18,6 +18,28 @@ export default function App() {
   const quoteIndexRef = useRef(0)
   const closeTimerRef = useRef(null)
   const playSound = useSuccessSound()
+
+  const [leftWidth, setLeftWidth] = useState(300)
+  const dragRef = useRef(null)
+
+  const onResizeStart = useCallback((e) => {
+    dragRef.current = { startX: e.clientX, startWidth: leftWidth }
+
+    function onMove(e) {
+      if (!dragRef.current) return
+      const delta = e.clientX - dragRef.current.startX
+      setLeftWidth(Math.max(220, Math.min(520, dragRef.current.startWidth + delta)))
+    }
+
+    function onUp() {
+      dragRef.current = null
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }, [leftWidth])
 
   function handleAdd(expense) {
     addExpense(expense)
@@ -73,21 +95,28 @@ export default function App() {
 
       <main className="app-main">
         {tab === '记录' && (
-          <>
-            <ExpenseForm categories={categories} onAdd={handleAdd} />
-            <div className="list-header">
-              <h2>消费明细</h2>
-              <select
-                className="filter-select"
-                value={filter}
-                onChange={e => setFilter(e.target.value)}
-              >
-                <option value="all">全部分类</option>
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+          <div className="record-layout">
+            <div className="record-left" style={{ width: leftWidth }}>
+              <ExpenseForm categories={categories} onAdd={handleAdd} />
             </div>
-            <ExpenseList expenses={filteredExpenses} onDelete={deleteExpense} />
-          </>
+            <div className="resize-handle" onMouseDown={onResizeStart} title="拖拽调整宽度">
+              <span className="resize-dots" />
+            </div>
+            <div className="record-right">
+              <div className="list-header">
+                <h2>消费明细</h2>
+                <select
+                  className="filter-select"
+                  value={filter}
+                  onChange={e => setFilter(e.target.value)}
+                >
+                  <option value="all">全部分类</option>
+                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <ExpenseList key={filter} expenses={filteredExpenses} onDelete={deleteExpense} />
+            </div>
+          </div>
         )}
 
         {tab === '图表' && <Charts expenses={expenses} />}

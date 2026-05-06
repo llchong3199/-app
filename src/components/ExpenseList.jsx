@@ -18,13 +18,17 @@ export function ExpenseList({ expenses, onDelete }) {
 
   return (
     <div className="expense-list">
-      {expenses.map(e => {
+      {expenses.map((e, idx) => {
         const level = getAmountLevel(e.amount)
         const iconSize = ICON_SIZES[level]
         const color = getCategoryColor(e.category)
 
         return (
-          <div key={e.id} className="expense-item">
+          <div
+            key={e.id}
+            className="expense-item"
+            style={{ animationDelay: `${Math.min(idx * 40, 300)}ms` }}
+          >
             <div className="expense-icon-col">
               <span
                 className="expense-main-icon"
