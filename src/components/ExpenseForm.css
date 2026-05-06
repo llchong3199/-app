@@ -1,0 +1,99 @@
+.expense-form {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  transition: background 0.3s;
+}
+
+.expense-form h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.form-field input,
+.form-field select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #6366f1;
+  background: var(--input-focus);
+}
+
+.date-trigger {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.date-trigger:hover {
+  border-color: #6366f1;
+  background: var(--input-focus);
+}
+
+.date-trigger-icon {
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.form-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin: -8px 0 12px;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+}
