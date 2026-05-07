@@ -51,6 +51,57 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const [musicDuration, setMusicDuration] = useState(0)
   const [currentTrack, setCurrentTrack] = useState(0)
   const [trackLabel, setTrackLabel] = useState(PLAYLIST[0].name)
+  const audioCtxRef = useRef(null)
+  const analyserRef = useRef(null)
+  const sourceRef = useRef(null)
+  const canvasRef = useRef(null)
+  const animRef = useRef(null)
+
+  function setupAnalyser(audio) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx()
+    const ctx = audioCtxRef.current
+    try { sourceRef.current?.disconnect() } catch {}
+    const analyser = ctx.createAnalyser()
+    analyser.fftSize = 32
+    const source = ctx.createMediaElementSource(audio)
+    source.connect(analyser)
+    analyser.connect(ctx.destination)
+    analyserRef.current = analyser
+    sourceRef.current = source
+    if (ctx.state === 'suspended') ctx.resume()
+  }
+
+  function drawVisualizer() {
+    const canvas = canvasRef.current
+    const analyser = analyserRef.current
+    if (!canvas || !analyser) { animRef.current = requestAnimationFrame(drawVisualizer); return }
+    const rect = canvas.getBoundingClientRect()
+    if (canvas.width !== rect.width || canvas.height !== rect.height) {
+      canvas.width = rect.width
+      canvas.height = rect.height
+    }
+    const data = new Uint8Array(analyser.frequencyBinCount)
+    analyser.getByteFrequencyData(data)
+    const ctx = canvas.getContext('2d')
+    const w = canvas.width
+    const h = canvas.height
+    ctx.clearRect(0, 0, w, h)
+    const bc = 32
+    const bw = w / bc
+    for (let i = 0; i < bc; i++) {
+      const idx = i < 16 ? (data.length - 1 - i) : (i - 16)
+      const bh = Math.max(1, (data[idx] / 255) * h)
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,182,193,0.4)' : 'rgba(255,107,157,0.35)'
+      ctx.fillRect(i * bw + 0.5, h - bh, bw - 1, bh)
+    }
+    animRef.current = requestAnimationFrame(drawVisualizer)
+  }
+
+  useEffect(() => {
+    animRef.current = requestAnimationFrame(drawVisualizer)
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+  }, [])
 
   function playTrack(index) {
     const src = encodeURI(PLAYLIST[index].file)
@@ -70,6 +121,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     }
     audio.play().catch(err => console.warn('[audio]', err))
     audioRef.current = audio
+    setupAnalyser(audio)
     setCurrentTrack(index)
     setTrackLabel(PLAYLIST[index].name)
     setMusicTime(0)
@@ -212,12 +264,60 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
               onClick={() => setShowSettings(true)}
               title="设置"
             >
-              <UserAvatar avatar={freshAvatar} size={28} />
+              <UserAvatar avatar={freshAvatar} size={34} />
             </button>
             <span className="header-username">{user.username}</span>
             <button className="logout-btn" onClick={onLogout}>退出</button>
           </div>
         </div>
+
+        {/* ── 音乐播放器 ── */}
+        <div className="music-bar">
+          <div className={`music-vinyl ${musicPlaying ? 'spinning' : ''}`}>
+            <span>🎵</span>
+          </div>
+          <div className="music-controls">
+            <button className="music-ctrl-btn" onClick={prevTrack} title="上一首">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <polygon points="16,5 8,12 16,19" />
+                <rect x="7" y="5" width="2" height="14" rx="0.5" />
+              </svg>
+            </button>
+            <button className="music-ctrl-btn music-play-btn" onClick={toggleMusic} title={musicPlaying ? '暂停' : '播放'}>
+              {musicPlaying ? (
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <rect x="7" y="4" width="3" height="16" rx="0.5" />
+                  <rect x="14" y="4" width="3" height="16" rx="0.5" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <polygon points="7,4 19,12 7,20" />
+                </svg>
+              )}
+            </button>
+            <button className="music-ctrl-btn" onClick={nextTrack} title="下一首">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <polygon points="8,5 16,12 8,19" />
+                <rect x="15" y="5" width="2" height="14" rx="0.5" />
+              </svg>
+            </button>
+          </div>
+          <div className="music-info">
+            <span className="music-track-name">{trackLabel}</span>
+            <div className="music-viz-progress">
+              <canvas ref={canvasRef} className="music-viz-canvas" />
+              <div className="music-progress-wrap" onMouseDown={seekMusic}>
+                <div className="music-progress-bar">
+                  <div
+                    className="music-progress-fill"
+                    style={{ width: musicDuration ? `${(musicTime / musicDuration) * 100}%` : '0%' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <nav className="tabs">
           {TABS.map(t => (
             <button
@@ -229,31 +329,6 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
             </button>
           ))}
         </nav>
-
-        {/* ── 音乐播放器 ── */}
-        <div className="music-bar">
-          <div className={`music-vinyl ${musicPlaying ? 'spinning' : ''}`}>
-            <span>🎵</span>
-          </div>
-          <div className="music-controls">
-            <button className="music-ctrl-btn" onClick={prevTrack} title="上一首">⏮</button>
-            <button className="music-ctrl-btn music-play-btn" onClick={toggleMusic} title={musicPlaying ? '暂停' : '播放'}>
-              {musicPlaying ? '⏸' : '▶️'}
-            </button>
-            <button className="music-ctrl-btn" onClick={nextTrack} title="下一首">⏭</button>
-          </div>
-          <div className="music-info">
-            <span className="music-track-name">{trackLabel}</span>
-            <div className="music-progress-wrap" onMouseDown={seekMusic}>
-              <div className="music-progress-bar">
-                <div
-                  className="music-progress-fill"
-                  style={{ width: musicDuration ? `${(musicTime / musicDuration) * 100}%` : '0%' }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
       </header>
 
       <main className="app-main">

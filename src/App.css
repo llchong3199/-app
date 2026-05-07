@@ -10,15 +10,15 @@
   background: transparent;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  padding: 24px 0 0;
+  padding: 8px 0 0;
   z-index: 10;
 }
 
 .header-content {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .app-header h1 {
@@ -46,6 +46,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-top: 4px;
 }
 
 /* ── Music bar ── */
@@ -54,7 +55,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 0 8px;
+  padding: 6px 0 4px;
   border-bottom: 1px solid var(--border-2);
 }
 
@@ -79,6 +80,10 @@
 @keyframes spinVinyl {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.header-content + .music-bar {
+  margin-top: -8px;
 }
 
 .music-controls {
@@ -128,13 +133,28 @@
   flex-shrink: 0;
 }
 
-.music-progress-wrap {
+.music-viz-progress {
   flex: 1;
-  height: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 60px;
+}
+
+.music-viz-canvas {
+  width: 100%;
+  height: 16px;
+  display: block;
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.music-progress-wrap {
+  width: 100%;
+  height: 18px;
   display: flex;
   align-items: center;
   cursor: pointer;
-  min-width: 60px;
 }
 
 .music-progress-bar {
@@ -157,10 +177,6 @@
   transition: width 0.3s linear;
 }
 
-.header-content + .music-bar {
-  margin-top: -8px;
-}
-
 .header-avatar-btn {
   background: none;
   border: none;
@@ -175,8 +191,8 @@
 .header-avatar-btn:hover { opacity: 0.7; }
 
 .header-username {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-2);
 }
 
@@ -200,7 +216,7 @@
   display: flex;
   gap: 4px;
   border-bottom: 1px solid rgba(255, 107, 157, 0.35);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .tab {

@@ -162,3 +162,24 @@
   color: var(--accent-green);
   margin: 8px 0 0;
 }
+
+.settings-export-btn,
+.settings-import-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.settings-export-btn:hover,
+.settings-import-btn:hover {
+  border-color: var(--gold-primary);
+  color: var(--gold-deep);
+  box-shadow: 0 2px 8px rgba(255,107,157,0.2);
+}

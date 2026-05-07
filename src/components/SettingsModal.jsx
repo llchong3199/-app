@@ -12,6 +12,7 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [saving, setSaving] = useState('')
+  const importRef = useRef(null)
 
   function clearMsg() { setError(''); setSuccess('') }
 
@@ -42,6 +43,39 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     } finally {
       setSaving('')
     }
+  }
+
+  function handleExport() {
+    const data = {
+      users: localStorage.getItem('et-users'),
+      session: localStorage.getItem('et-session'),
+      expenseData: localStorage.getItem('expense-tracker-data'),
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `Hello记账-数据备份-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    setSuccess('数据已导出')
+  }
+
+  function handleImport(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result)
+        if (!data.expenseData) { setError('无效的数据文件'); return }
+        localStorage.setItem('et-users', data.users || '[]')
+        localStorage.setItem('et-session', data.session || '')
+        localStorage.setItem('expense-tracker-data', data.expenseData)
+        window.location.reload()
+      } catch { setError('文件解析失败') }
+    }
+    reader.readAsText(file)
   }
 
   return createPortal(
@@ -133,6 +167,22 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
           >
             {saving === 'password' ? '保存中…' : '保存密码'}
           </button>
+        </div>
+
+        {/* ── 数据导入/导出 ── */}
+        <div className="settings-section">
+          <label>数据管理</label>
+          <div className="settings-row" style={{ gap: 10 }}>
+            <button className="settings-export-btn" onClick={handleExport}>导出数据</button>
+            <button className="settings-import-btn" onClick={() => importRef.current?.click()}>导入数据</button>
+          </div>
+          <input
+            ref={importRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+          />
         </div>
 
         {error && <p className="settings-error">{error}</p>}
