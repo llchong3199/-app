@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
-  PieChart, Pie, Cell, Tooltip,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList,
+  Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell,
 } from 'recharts'
 import { getCategoryIcon, getCategoryColor } from '../constants/categories'
 import { jsPDF } from 'jspdf'
@@ -157,24 +156,63 @@ export function Charts({ expenses }) {
       <div className="chart-card">
         <h3>分类占比{drillMonth ? ` · ${parseInt(drillMonth.slice(5))}月` : ''}</h3>
         <p className="chart-total">合计 ¥{total.toFixed(2)}</p>
-        <ResponsiveContainer width="100%" height={260}>
-          <PieChart>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="label"
-              cx="50%" cy="50%"
-              outerRadius={88}
-              label={({ name, percent }) => `${getCategoryIcon(name)} ${(percent * 100).toFixed(0)}%`}
-              labelLine={{ stroke: tickColor }}
-            >
-              {pieData.map((entry, i) => (
-                <Cell key={i} fill={getCategoryColor(entry.name) || FALLBACK_COLORS[i % FALLBACK_COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(v, name) => [`¥${v}`, name]} contentStyle={tooltipStyle} />
-          </PieChart>
-        </ResponsiveContainer>
+        <div style={{ textAlign: 'center', padding: '4px 0', position: 'relative' }}>
+          <svg viewBox="0 0 260 260" style={{ width: 220, height: 220, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.06))' }}>
+            <defs>
+              <filter id="pie-shadow">
+                <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.15" />
+              </filter>
+            </defs>
+            <g style={{ transformOrigin: '130px 130px', animation: 'pieEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
+              {(() => {
+                const cx = 130, cy = 130, or = 100, ir = 50
+                let startAngle = 0
+                return pieData.map((entry, i) => {
+                  const pct = total > 0 ? entry.value / total : 0
+                  const angle = pct * 360
+                  const startRad = (startAngle - 90) * Math.PI / 180
+                  const endRad = (startAngle + angle - 90) * Math.PI / 180
+                  const ox1 = cx + or * Math.cos(startRad)
+                  const oy1 = cy + or * Math.sin(startRad)
+                  const ox2 = cx + or * Math.cos(endRad)
+                  const oy2 = cy + or * Math.sin(endRad)
+                  const ix1 = cx + ir * Math.cos(startRad)
+                  const iy1 = cy + ir * Math.sin(startRad)
+                  const ix2 = cx + ir * Math.cos(endRad)
+                  const iy2 = cy + ir * Math.sin(endRad)
+                  const largeArc = angle > 180 ? 1 : 0
+                  const color = getCategoryColor(entry.name) || FALLBACK_COLORS[i % FALLBACK_COLORS.length]
+                  const seg = pct > 0 ? (
+                    <path
+                      key={i}
+                      d={`M ${ox1} ${oy1} A ${or} ${or} 0 ${largeArc} 1 ${ox2} ${oy2} L ${ix2} ${iy2} A ${ir} ${ir} 0 ${largeArc} 0 ${ix1} ${iy1} Z`}
+                      fill={color}
+                      stroke="#fff"
+                      strokeWidth={1.5}
+                      filter="url(#pie-shadow)"
+                    />
+                  ) : null
+                  startAngle += angle
+                  return seg
+                })
+              })()}
+            </g>
+            <circle cx="130" cy="130" r="42" fill="var(--surface)" stroke="var(--border-2)" strokeWidth="1" />
+            <text x="130" y="124" textAnchor="middle" fill="var(--text-3)" fontSize="11" fontWeight="500">总计</text>
+            <text x="130" y="146" textAnchor="middle" fill="var(--gold-deep)" fontSize="16" fontWeight="800">¥{total.toFixed(0)}</text>
+          </svg>
+        </div>
+        <div className="pie-legend">
+          {pieData.map((entry, i) => (
+            <div key={i} className="pie-legend-item">
+              <span className="pie-legend-dot" style={{ background: getCategoryColor(entry.name) || FALLBACK_COLORS[i % FALLBACK_COLORS.length] }} />
+              <span className="pie-legend-icon">{getCategoryIcon(entry.name)}</span>
+              <span className="pie-legend-name">{entry.name}</span>
+              <span className="pie-legend-value">¥{entry.value.toFixed(2)}</span>
+              <span className="pie-legend-pct">{(entry.value / total * 100).toFixed(1)}%</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── 右：月度 / 每日柱状图 ── */}

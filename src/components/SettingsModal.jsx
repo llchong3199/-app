@@ -4,11 +4,15 @@ import { AvatarPicker, UserAvatar } from './AvatarPicker'
 import './SettingsModal.css'
 
 const BUILTIN_NAMES = [
-  'Kiss The Rain',
-  '風のように',
-  '交界 (伴奏)',
-  '小野',
-  '生命之名',
+  '星辰大海',
+  'Counting Stars',
+  '少年',
+  '小美满',
+  '做自己的光',
+  '太阳之光',
+  '那些年',
+  '我相信',
+  '一路生花',
 ]
 
 export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdatePassword, onClose }) {
@@ -24,15 +28,10 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   const [hoverClose, setHoverClose] = useState(false)
   const [pendingAvatar, setPendingAvatar] = useState(null)
   const importRef = useRef(null)
-  const musicInputRef = useRef(null)
   const previewRef = useRef(null)
   const [previewTrack, setPreviewTrack] = useState(null)
   const [previewPlaying, setPreviewPlaying] = useState(false)
   const [showMusic, setShowMusic] = useState(() => localStorage.getItem('et-show-music') !== 'false')
-  const [customTracks, setCustomTracks] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('et-custom-music') || '[]') }
-    catch { return [] }
-  })
   const [hiddenBuiltin, setHiddenBuiltin] = useState(() => {
     try { return JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]') }
     catch { return [] }
@@ -63,7 +62,7 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     clearMsg()
     const src = file.startsWith('data:') ? file : encodeURI(file)
     const audio = new Audio(src)
-    audio.volume = 0.3
+    audio.volume = 0.1
     audio.addEventListener('ended', () => { setPreviewPlaying(false); setPreviewTrack(null) })
     audio.addEventListener('pause', () => setPreviewPlaying(false))
     audio.addEventListener('play', () => setPreviewPlaying(true))
@@ -83,14 +82,12 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   }
 
   function getFullTrackList() {
-    const builtin = BUILTIN_NAMES.map((name, i) => ({
+    return BUILTIN_NAMES.map((name, i) => ({
       name,
-      file: `/music/${['Kiss The Rain（淡淡伤感）.mp3','S.E.N.S. - 風のように.mp3','交界 (伴奏).mp3','山野煮雨 - 小野.mp3','神隱少女 - 生命之名.mp3'][i]}`,
+      file: `/music/${['黄霄雲 - 星辰大海.mp3','OneRepublic - Counting Stars.mp3','夢然 - 少年.mp3','周深 - 小美满.mp3','善宇 - 做自己的光.mp3','太阳之光.mp3','姜创钢琴 - 那些年.mp3','杨培安 - 我相信.mp3','溫奕心 - 一路生花.mp3'][i]}`,
       builtin: true,
       builtinIdx: i,
     })).filter(t => !hiddenBuiltin.includes(t.builtinIdx))
-    const custom = customTracks.map(t => ({ name: t.name, file: t.data, builtin: false }))
-    return [...builtin, ...custom]
   }
 
   async function handleSaveAll() {
@@ -140,58 +137,21 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     onClose()
   }
 
-  function handleAddMusic(e) {
-    const files = e.target.files
-    if (!files?.length) return
-    clearMsg()
-    const file = files[0]
-    const name = file.name.replace(/\.(mp3|wav|ogg|flac|m4a)$/i, '')
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        const tracks = [...customTracks, { name, data: reader.result }]
-        setCustomTracks(tracks)
-        localStorage.setItem('et-custom-music', JSON.stringify(tracks))
-        setSuccess(`已添加: ${name}`)
-      } catch (err) {
-        if (err.name === 'QuotaExceededError' || err.code === 22) {
-          setError('存储空间不足，请移除一些自定义歌曲后再试')
-        } else { setError('保存失败: ' + err.message) }
-      }
-    }
-    reader.onerror = () => setError('读取文件失败')
-    reader.readAsDataURL(file)
-    e.target.value = ''
-  }
-
-  function handleDeleteTrack(track, listIdx) {
-    if (!track.builtin) {
-      const customIdx = listIdx - (BUILTIN_NAMES.length - hiddenBuiltin.length)
-      const tracks = customTracks.filter((_, idx) => idx !== customIdx)
-      setCustomTracks(tracks)
-      localStorage.setItem('et-custom-music', JSON.stringify(tracks))
-      setSuccess('已移除自定义音乐')
-    } else {
-      const newHidden = [...hiddenBuiltin, track.builtinIdx]
-      setHiddenBuiltin(newHidden)
-      localStorage.setItem('et-hidden-builtin', JSON.stringify(newHidden))
-      setSuccess(`已隐藏: ${track.name}`)
-    }
-    if (previewTrack === listIdx) stopPreview()
+  function handleDeleteTrack(track) {
+    const newHidden = [...hiddenBuiltin, track.builtinIdx]
+    setHiddenBuiltin(newHidden)
+    localStorage.setItem('et-hidden-builtin', JSON.stringify(newHidden))
+    setSuccess(`已隐藏: ${track.name}`)
+    if (previewTrack === track.builtinIdx) stopPreview()
   }
 
   function handleExport() {
-    const userData = {}
+    const allData = {}
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
-      if (key.startsWith('et-data-')) userData[key] = localStorage.getItem(key)
+      if (key.startsWith('et-')) allData[key] = localStorage.getItem(key)
     }
-    const data = {
-      users: localStorage.getItem('et-users'),
-      session: localStorage.getItem('et-session'),
-      userData,
-    }
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -208,13 +168,10 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result)
-        if (!data.users && !data.userData) { setError('无效的数据文件'); return }
-        if (data.users) localStorage.setItem('et-users', data.users)
-        if (data.session) localStorage.setItem('et-session', data.session)
-        if (data.userData) {
-          for (const [key, val] of Object.entries(data.userData)) {
-            localStorage.setItem(key, val)
-          }
+        const keys = Object.keys(data).filter(k => k.startsWith('et-'))
+        if (keys.length === 0) { setError('无效的数据文件'); return }
+        for (const key of keys) {
+          localStorage.setItem(key, data[key])
         }
         window.location.reload()
       } catch { setError('文件解析失败') }
@@ -233,39 +190,42 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
         />
       )}
       <div className="settings-panel" onClick={e => e.stopPropagation()}>
-        <div className="settings-header">
-          <h2>设置</h2>
-          <button
-            className={`settings-close${isDirty && hoverClose ? ' save-mode' : ''}`}
-            onClick={handleCloseClick}
-            onMouseEnter={() => setHoverClose(true)}
-            onMouseLeave={() => setHoverClose(false)}
-            title={isDirty && hoverClose ? '保存并关闭' : '关闭'}
-          >
-            {isDirty && hoverClose ? (
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 14a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm2-10H6V4h8v3z"/>
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              </svg>
-            )}
-          </button>
+        <div className="settings-sticky-top">
+          <div className="settings-header">
+            <h2>设置</h2>
+            <button
+              className={`settings-close${isDirty && hoverClose ? ' save-mode' : ''}`}
+              onClick={handleCloseClick}
+              onMouseEnter={() => setHoverClose(true)}
+              onMouseLeave={() => setHoverClose(false)}
+              title={isDirty && hoverClose ? '保存并关闭' : '关闭'}
+            >
+              {isDirty && hoverClose ? (
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 14a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm2-10H6V4h8v3z"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                </svg>
+              )}
+            </button>
+          </div>
+
+          {/* ── 子标签页 ── */}
+          <div className="settings-subtabs">
+            <button
+              className={`settings-subtab${settingsTab === 'general' ? ' active' : ''}`}
+              onClick={() => { stopPreview(); setSettingsTab('general') }}
+            >通用</button>
+            <button
+              className={`settings-subtab${settingsTab === 'music' ? ' active' : ''}`}
+              onClick={() => { stopPreview(); setSettingsTab('music') }}
+            >音乐</button>
+          </div>
         </div>
 
-        {/* ── 子标签页 ── */}
-        <div className="settings-subtabs">
-          <button
-            className={`settings-subtab${settingsTab === 'general' ? ' active' : ''}`}
-            onClick={() => { stopPreview(); setSettingsTab('general') }}
-          >通用</button>
-          <button
-            className={`settings-subtab${settingsTab === 'music' ? ' active' : ''}`}
-            onClick={() => { stopPreview(); setSettingsTab('music') }}
-          >音乐</button>
-        </div>
-
+        <div className="settings-content">
         {settingsTab === 'general' && (
           <>
             {/* ── 头像 ── */}
@@ -354,90 +314,79 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
         )}
 
         {settingsTab === 'music' && (
-          <div className="music-page">
-            <div className="music-stats">
-              <span>共 {allTracks.length} 首</span>
-              <span style={{ fontSize: 12 }}>
-                内置 {BUILTIN_NAMES.length - hiddenBuiltin.length} 首
-                {hiddenBuiltin.length > 0 && (
-                  <button
-                    className="music-restore-btn"
-                    onClick={() => {
-                      setHiddenBuiltin([])
-                      localStorage.removeItem('et-hidden-builtin')
-                      setSuccess('已恢复所有内置音乐')
-                    }}
-                    title="恢复隐藏的内置音乐"
-                  >恢复 {hiddenBuiltin.length} 首隐藏</button>
-                )}
-                 · 自定义 {customTracks.length} 首
-              </span>
-            </div>
-
-            <div className="music-add-row">
-              <button className="settings-save-btn" onClick={() => musicInputRef.current?.click()}>
-                + 添加本地音乐
-              </button>
-              <input
-                ref={musicInputRef}
-                type="file"
-                accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*"
-                style={{ display: 'none' }}
-                onChange={handleAddMusic}
-              />
-            </div>
-
-            <div className="music-track-list">
-              {allTracks.map((t, i) => (
-                <div key={`${t.builtin ? 'b' : 'c'}-${i}`} className={`music-track-item${previewTrack === i ? ' playing' : ''}`}>
-                  <div className="music-track-left">
+          <>
+            <div className="settings-section">
+              <label>曲目</label>
+              <div className="music-stats">
+                <span>共 {allTracks.length} 首</span>
+                <span style={{ fontSize: 12 }}>
+                  {hiddenBuiltin.length > 0 && (
                     <button
-                      className="music-track-play"
-                      onClick={() => playPreview(t.file, t.name, i)}
-                      title={previewTrack === i && previewPlaying ? '暂停' : '播放'}
-                    >
-                      {previewTrack === i && previewPlaying ? (
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                          <rect x="8" y="5" width="2.5" height="14" rx="0.5" />
-                          <rect x="13.5" y="5" width="2.5" height="14" rx="0.5" />
-                        </svg>
-                      ) : (
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                          <polygon points="8,5 19,12 8,19" />
-                        </svg>
-                      )}
-                    </button>
-                    <span className="music-track-label">
-                      {t.name}
-                      {t.builtin && <span className="music-track-badge">内置</span>}
-                      {!t.builtin && <span className="music-track-badge">自定义</span>}
-                    </span>
+                      className="music-restore-btn"
+                      onClick={() => {
+                        setHiddenBuiltin([])
+                        localStorage.removeItem('et-hidden-builtin')
+                        setSuccess('已恢复所有内置音乐')
+                      }}
+                      title="恢复隐藏的内置音乐"
+                    >恢复 {hiddenBuiltin.length} 首隐藏</button>
+                  )}
+                </span>
+              </div>
+
+              <div className="music-track-list">
+                {allTracks.map((t, i) => (
+                  <div key={`b-${i}`} className={`music-track-item${previewTrack === i ? ' playing' : ''}`}>
+                    <div className="music-track-left">
+                      <button
+                        className="music-track-play"
+                        onClick={() => playPreview(t.file, t.name, i)}
+                        title={previewTrack === i && previewPlaying ? '暂停' : '播放'}
+                      >
+                        {previewTrack === i && previewPlaying ? (
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <rect x="8" y="5" width="2.5" height="14" rx="0.5" />
+                            <rect x="13.5" y="5" width="2.5" height="14" rx="0.5" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <polygon points="8,5 19,12 8,19" />
+                          </svg>
+                        )}
+                      </button>
+                      <span className="music-track-label">{t.name}</span>
+                    </div>
+                    <button
+                      className="music-track-remove"
+                      onClick={() => handleDeleteTrack(t)}
+                      title="隐藏"
+                    >×</button>
                   </div>
-                  <button
-                    className="music-track-remove"
-                    onClick={() => handleDeleteTrack(t, i)}
-                    title={t.builtin ? '隐藏' : '移除'}
-                  >×</button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="music-toggle-row">
-              <span>页面顶部显示播放器</span>
-              <button
-                className={`toggle-switch ${showMusic ? 'on' : ''}`}
-                onClick={() => {
-                  const next = !showMusic
-                  setShowMusic(next)
-                  localStorage.setItem('et-show-music', next)
-                }}
-                aria-label="切换音乐播放器"
-              >
-                <span className="toggle-knob" />
+            <div className="settings-section">
+              <label>播放器</label>
+              <div className="music-toggle-row">
+                <span>页面顶部显示播放器</span>
+                <button
+                  className={`toggle-switch ${showMusic ? 'on' : ''}`}
+                  onClick={() => {
+                    const next = !showMusic
+                    setShowMusic(next)
+                    localStorage.setItem('et-show-music', next)
+                  }}
+                  aria-label="切换音乐播放器"
+                >
+                  <span className="toggle-knob" />
               </button>
             </div>
           </div>
+          </>
         )}
+
+        </div>
 
         {/* ── 底部全局保存 ── */}
         {isDirty && (

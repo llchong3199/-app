@@ -1,4 +1,6 @@
-.modal-overlay {
+/* ── 成功弹窗（重做） ── */
+
+.ms-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0);
@@ -6,130 +8,216 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  transition: background 0.25s;
+  transition: background 0.35s ease;
 }
 
-.modal-overlay.visible {
-  background: rgba(0, 0, 0, 0.55);
+.ms-overlay.visible {
+  background: rgba(0, 0, 0, 0.5);
 }
 
-.success-modal {
+.ms-overlay.closing {
+  background: rgba(0, 0, 0, 0);
+}
+
+/* ── 卡片 ── */
+.ms-card {
   position: relative;
-  background: var(--surface);
-  border-radius: 20px;
-  padding: 36px 32px 28px;
-  width: 320px;
+  background: linear-gradient(160deg, #ffffff 0%, #fff5f8 40%, #fff0f5 100%);
+  border-radius: 24px;
+  padding: 40px 32px 28px;
+  width: 300px;
   text-align: center;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
+  box-shadow:
+    0 20px 60px rgba(255, 107, 157, 0.18),
+    0 0 0 1px rgba(255, 107, 157, 0.12);
   opacity: 0;
-  transform: scale(0.85) translateY(16px);
-  transition: opacity 0.25s, transform 0.25s, background 0.3s;
+  transform: scale(0.7) translateY(30px);
+  transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
 }
 
-.success-modal.visible {
+.ms-card.visible {
   opacity: 1;
   transform: scale(1) translateY(0);
 }
 
-.modal-icon-ring {
-  width: 80px;
-  height: 80px;
+/* ── 粒子层 ── */
+.ms-particle-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ms-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 182, 193, 0.6);
+  animation: msSparkleFade 2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes msSparkleFade {
+  0%   { opacity: 0; transform: scale(0); }
+  20%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.3); }
+}
+
+/* ── Kitty 印章 ── */
+.ms-kitty-stamp {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(200, 80, 80, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  animation: msStampIn 0.5s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  z-index: 1;
+}
+
+.ms-kitty-stamp img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes msStampIn {
+  from { opacity: 0; transform: scale(0) rotate(-30deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ── 分类图标环 ── */
+.ms-icon-ring {
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
+  margin: 0 auto 14px;
+  border: 2px solid;
+  animation: msRingPulse 0.6s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  box-shadow: 0 0 0 0 transparent;
 }
 
-.modal-icon {
-  font-size: 38px;
+@keyframes msRingPulse {
+  from { opacity: 0; transform: scale(0.5); box-shadow: 0 0 0 0 currentColor; }
+  50%  { box-shadow: 0 0 20px 4px currentColor; }
+  to   { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 transparent; }
+}
+
+.ms-icon {
+  font-size: 34px;
   line-height: 1;
 }
 
-.modal-check {
-  font-size: 13px;
+/* ── 文字 ── */
+.ms-check {
+  font-size: 12px;
   font-weight: 600;
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+  opacity: 0;
+  animation: msFadeUp 0.3s 0.15s ease both;
 }
 
-.modal-category {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.modal-amount {
-  font-size: 42px;
+.ms-amount {
+  font-size: 38px;
   font-weight: 800;
   color: var(--gold-deep);
   letter-spacing: -1px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
+  opacity: 0;
+  animation: msFadeUp 0.35s 0.2s ease both;
 }
 
-.modal-meta {
-  font-size: 13px;
+.ms-category {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: msFadeUp 0.3s 0.25s ease both;
+}
+
+.ms-meta {
+  font-size: 12px;
   color: var(--text-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
+  opacity: 0;
+  animation: msFadeUp 0.3s 0.3s ease both;
 }
 
-.modal-dot { color: var(--border); }
+.ms-dot { color: var(--border); }
 
-.modal-divider {
+.ms-divider {
   border: none;
   border-top: 1px solid var(--divider);
-  margin: 20px 0 16px;
+  margin: 18px 0 14px;
+  opacity: 0;
+  animation: msFadeUp 0.3s 0.35s ease both;
 }
 
-.modal-quote {
+.ms-quote {
   font-size: 13px;
   color: var(--text-2);
   line-height: 1.6;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 7px;
   text-align: left;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
+  background: rgba(255, 107, 157, 0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  opacity: 0;
+  animation: msFadeUp 0.3s 0.4s ease both;
 }
 
-.modal-quote-icon {
-  font-size: 16px;
+.ms-quote-icon {
+  font-size: 14px;
   flex-shrink: 0;
   margin-top: 1px;
 }
 
-.modal-close-btn {
-  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
-  color: var(--gold-deep);
-  border: none;
-  border-radius: 10px;
-  padding: 11px 0;
+.ms-btn {
   width: 100%;
+  padding: 12px 0;
+  background: linear-gradient(135deg, #FF6B9D, #FF8BBF);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s;
-  box-shadow: 0 2px 8px rgba(255,107,157,0.25);
+  transition: all 0.2s;
+  box-shadow: 0 2px 10px rgba(255, 107, 157, 0.3);
+  letter-spacing: 0.3px;
+  opacity: 0;
+  animation: msFadeUp 0.3s 0.45s ease both;
 }
 
-.modal-close-btn:hover { opacity: 0.88; }
-
-/* ── Hello Kitty accent ── */
-.modal-kitty-tag {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  font-size: 20px;
-  animation: kittyTagWiggle 2s ease-in-out infinite;
-  filter: drop-shadow(0 2px 4px rgba(255,107,157,0.3));
+.ms-btn:hover {
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.4);
+  transform: translateY(-1px);
 }
 
-@keyframes kittyTagWiggle {
-  0%,100% { transform: rotate(-10deg); }
-  50%     { transform: rotate(10deg); }
+.ms-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(255, 107, 157, 0.3);
 }
+
+@keyframes msFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

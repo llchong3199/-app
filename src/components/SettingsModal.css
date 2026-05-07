@@ -12,7 +12,6 @@
 .settings-panel {
   background: var(--surface);
   border-radius: 28px;
-  padding: 36px 40px;
   width: 100%;
   max-width: 500px;
   max-height: 85vh;
@@ -26,11 +25,26 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+.settings-sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 36px 40px 0;
+  background: color-mix(in srgb, var(--surface) 25%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.settings-content {
+  padding: 4px 40px 12px;
+}
+
 .settings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 28px;
+  padding: 4px 0 0;
 }
 
 .settings-header h2 {
@@ -165,13 +179,13 @@
 .settings-error {
   font-size: 13px;
   color: #ef4444;
-  margin: 8px 0 0;
+  margin: 8px 40px 0;
 }
 
 .settings-success {
   font-size: 13px;
   color: var(--accent-green);
-  margin: 8px 0 0;
+  margin: 8px 40px 0;
 }
 
 .settings-export-btn,
@@ -229,45 +243,11 @@
   left: 23px;
 }
 
-/* ── Custom music tracks ── */
-.custom-track-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px;
-  background: var(--cat-tag-bg);
-  border-radius: 8px;
-}
-
-.custom-track-name {
-  font-size: 13px;
-  color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-
-.custom-track-del {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: var(--text-3);
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
-  border-radius: 4px;
-  transition: color 0.15s;
-}
-
-.custom-track-del:hover {
-  color: #ef4444;
-}
-
 /* ── Settings subtabs ── */
 .settings-subtabs {
   display: flex;
   gap: 4px;
+  padding: 0 0 8px;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border-2);
 }
@@ -296,12 +276,6 @@
 }
 
 /* ── Music management page ── */
-.music-page {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 .music-stats {
   display: flex;
   justify-content: space-between;
@@ -332,15 +306,6 @@
 
 .music-restore-btn:hover {
   color: var(--gold-deep);
-}
-
-.music-add-row {
-  display: flex;
-}
-
-.music-add-row .settings-save-btn {
-  width: 100%;
-  text-align: center;
 }
 
 .music-track-list {
@@ -442,18 +407,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: var(--cat-tag-bg);
-  border-radius: 10px;
   font-size: 13px;
   color: var(--text);
+  margin-top: 4px;
 }
 
 /* ── Bottom save-all button ── */
 .settings-save-all {
-  width: 100%;
+  width: calc(100% - 80px);
+  margin: 8px 40px 0;
   padding: 14px;
-  margin-top: 8px;
   background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
   color: #fff;
   font-weight: 700;

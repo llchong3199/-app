@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { AvatarPicker, UserAvatar } from './AvatarPicker'
+import { UserAvatar } from './AvatarPicker'
 import { DeletePigDialog } from './DeletePigDialog'
 import './AuthScreen.css'
 
@@ -120,7 +120,6 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
   const [form, setForm] = useState({ username: '', password: '', confirm: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [editingAvatarUser, setEditingAvatarUser] = useState(null)
   const [deleteMode, setDeleteMode] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteError, setDeleteError] = useState('')
@@ -192,12 +191,6 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
           onConfirmDelete={handleFinalDelete}
         />
       )}
-      {editingAvatarUser && (
-        <AvatarPicker
-          onSelect={avatar => onUpdateAvatar(editingAvatarUser.id, avatar)}
-          onClose={() => setEditingAvatarUser(null)}
-        />
-      )}
 
       <div className="auth-brand">
         <DragDeco style={{ top: -35, left: -15 }}>🌸</DragDeco>
@@ -225,11 +218,6 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
                       <UserAvatar avatar={getAvatar(u)} size={48} />
                       <span className="user-name">{u.username}</span>
                     </button>
-                    <button
-                      className="user-edit-btn"
-                      title="修改头像"
-                      onClick={e => { e.stopPropagation(); setEditingAvatarUser(u) }}
-                    >✏️</button>
                   </div>
                 ))}
               </div>

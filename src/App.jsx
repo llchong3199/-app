@@ -19,25 +19,20 @@ import './App.css'
 const TABS = ['记录', '图表', '预算', '储蓄', '分类']
 
 const BUILTIN_PLAYLIST = [
-  { name: 'Kiss The Rain', file: '/music/Kiss The Rain（淡淡伤感）.mp3' },
-  { name: '風のように', file: '/music/S.E.N.S. - 風のように.mp3' },
-  { name: '交界 (伴奏)', file: '/music/交界 (伴奏).mp3' },
-  { name: '小野', file: '/music/山野煮雨 - 小野.mp3' },
-  { name: '生命之名', file: '/music/神隱少女 - 生命之名.mp3' },
+  { name: '星辰大海', file: '/music/黄霄雲 - 星辰大海.mp3' },
+  { name: 'Counting Stars', file: '/music/OneRepublic - Counting Stars.mp3' },
+  { name: '少年', file: '/music/夢然 - 少年.mp3' },
+  { name: '小美满', file: '/music/周深 - 小美满.mp3' },
+  { name: '做自己的光', file: '/music/善宇 - 做自己的光.mp3' },
+  { name: '太阳之光', file: '/music/太阳之光.mp3' },
+  { name: '那些年', file: '/music/姜创钢琴 - 那些年.mp3' },
+  { name: '我相信', file: '/music/杨培安 - 我相信.mp3' },
+  { name: '一路生花', file: '/music/溫奕心 - 一路生花.mp3' },
 ]
 
-function getFullPlaylist() {
-  try {
-    const hiddenIdx = JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]')
-    const builtin = BUILTIN_PLAYLIST.filter((_, i) => !hiddenIdx.includes(i))
-    const raw = localStorage.getItem('et-custom-music')
-    const custom = raw ? JSON.parse(raw) : []
-    const customTracks = custom.map(t => ({ name: t.name, file: t.data })).filter(t => t.file)
-    return [...builtin, ...customTracks]
-  } catch (e) {
-    console.warn('[playlist] 获取失败:', e)
-    return BUILTIN_PLAYLIST
-  }
+function getPlaylist() {
+  const hiddenIdx = JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]')
+  return BUILTIN_PLAYLIST.filter((_, i) => !hiddenIdx.includes(i))
 }
 
 function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUpdatePassword }) {
@@ -65,7 +60,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const [musicTime, setMusicTime] = useState(0)
   const [musicDuration, setMusicDuration] = useState(0)
   const [currentTrack, setCurrentTrack] = useState(0)
-  const [trackLabel, setTrackLabel] = useState(() => getFullPlaylist()[0]?.name ?? BUILTIN_PLAYLIST[0].name)
+  const [trackLabel, setTrackLabel] = useState(() => getPlaylist()[0]?.name ?? BUILTIN_PLAYLIST[0].name)
   const audioCtxRef = useRef(null)
   const analyserRef = useRef(null)
   const sourceRef = useRef(null)
@@ -124,11 +119,11 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   }, [])
 
   function playTrack(index) {
-    const pl = getFullPlaylist()
+    const pl = getPlaylist()
     const file = pl[index]?.file ?? pl[0].file
     const src = file.startsWith('data:') ? file : encodeURI(file)
     const audio = new Audio(src)
-    audio.volume = 0.2
+    audio.volume = 0.1
     audio.preload = 'auto'
 
     const isDataUrl = file.startsWith('data:')
@@ -169,7 +164,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   // 设置关闭后刷新当前曲目信息
   useEffect(() => {
     if (refreshKey === 0) return
-    const pl = getFullPlaylist()
+    const pl = getPlaylist()
     if (currentTrack >= pl.length && pl.length > 0) {
       const next = currentTrack % pl.length
       setCurrentTrack(next)
@@ -186,13 +181,13 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   }
 
   function prevTrack() {
-    const len = getFullPlaylist().length
+    const len = getPlaylist().length
     const prev = (currentTrack - 1 + len) % len
     playTrack(prev)
   }
 
   function nextTrack() {
-    const len = getFullPlaylist().length
+    const len = getPlaylist().length
     const next = (currentTrack + 1) % len
     playTrack(next)
   }
