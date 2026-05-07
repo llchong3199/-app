@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  pointer-events: auto;
 }
 
 .settings-panel {
@@ -42,16 +43,31 @@
 .settings-close {
   background: none;
   border: none;
-  font-size: 24px;
   color: var(--text-2);
   cursor: pointer;
-  padding: 0 4px;
+  padding: 4px;
   line-height: 1;
-  border-radius: 4px;
-  transition: color 0.2s;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
-.settings-close:hover { color: var(--text); }
+.settings-close:hover { color: var(--text); background: var(--border-2); }
+
+.settings-close.save-mode {
+  color: #fff;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  box-shadow: 0 2px 8px rgba(255,107,157,0.4);
+}
+
+.settings-close.save-mode:hover {
+  box-shadow: 0 4px 14px rgba(255,107,157,0.5);
+  transform: scale(1.05);
+}
 
 .settings-section {
   margin-bottom: 20px;
@@ -431,4 +447,30 @@
   border-radius: 10px;
   font-size: 13px;
   color: var(--text);
+}
+
+/* ── Bottom save-all button ── */
+.settings-save-all {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-save-all:hover {
+  box-shadow: 0 4px 16px rgba(255,107,157,0.4);
+  transform: translateY(-1px);
+}
+
+.settings-save-all:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }

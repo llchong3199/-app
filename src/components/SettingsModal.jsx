@@ -20,7 +20,9 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   const [confirmPw, setConfirmPw] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [saving, setSaving] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [hoverClose, setHoverClose] = useState(false)
+  const [pendingAvatar, setPendingAvatar] = useState(null)
   const importRef = useRef(null)
   const musicInputRef = useRef(null)
   const previewRef = useRef(null)
@@ -35,6 +37,10 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     try { return JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]') }
     catch { return [] }
   })
+
+  const hasPwChange = currentPw && newPw.length === 6 && newPw === confirmPw
+  const isDirty = username !== user.username || pendingAvatar !== null ||
+    currentPw !== '' || newPw !== '' || confirmPw !== ''
 
   function clearMsg() { setError(''); setSuccess('') }
 
@@ -77,32 +83,51 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     return [...builtin, ...custom]
   }
 
-  function handleSaveUsername() {
-    if (!username.trim()) { setError('用户名不能为空'); return }
-    if (username.trim() === user.username) { setSuccess('用户名未改变'); return }
+  async function handleSaveAll() {
     clearMsg()
-    try {
-      onUpdateUsername(user.id, username.trim())
-      setSuccess('用户名已更新')
-    } catch (err) {
-      setError(err.message)
+    setSaving(true)
+    const errors = []
+
+    // Save avatar
+    if (pendingAvatar !== null) {
+      try { onUpdateAvatar(user.id, pendingAvatar) }
+      catch { errors.push('头像保存失败') }
+    }
+
+    // Save username
+    if (username.trim() && username.trim() !== user.username) {
+      try {
+        onUpdateUsername(user.id, username.trim())
+      } catch (err) { errors.push(err.message) }
+    }
+
+    // Save password
+    if (currentPw || newPw || confirmPw) {
+      if (!currentPw) { errors.push('请输入当前密码') }
+      else if (newPw.length !== 6) { errors.push('新密码须为 6 位数字') }
+      else if (newPw !== confirmPw) { errors.push('两次密码不一致') }
+      else {
+        try {
+          await onUpdatePassword(user.id, currentPw, newPw)
+          setCurrentPw(''); setNewPw(''); setConfirmPw('')
+        } catch (err) { errors.push(err.message) }
+      }
+    }
+
+    setSaving(false)
+    if (errors.length) { setError(errors.join('；')) }
+    else {
+      setPendingAvatar(null)
+      setSuccess('全部设置已保存')
     }
   }
 
-  async function handleSavePassword() {
-    clearMsg()
-    if (!currentPw) { setError('请输入当前密码'); return }
-    if (newPw.length !== 6) { setError('新密码须为 6 位数字'); return }
-    if (newPw !== confirmPw) { setError('两次密码不一致'); return }
-    setSaving('password')
-    try {
-      await onUpdatePassword(user.id, currentPw, newPw)
-      setCurrentPw(''); setNewPw(''); setConfirmPw('')
-      setSuccess('密码已更新')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setSaving('')
+  function handleCloseClick() {
+    if (isDirty && hoverClose) {
+      handleSaveAll()
+    } else {
+      stopPreview()
+      onClose()
     }
   }
 
@@ -184,17 +209,33 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   const allTracks = getFullTrackList()
 
   return createPortal(
-    <div className="settings-overlay" onClick={onClose}>
+    <div className="settings-overlay">
       {showAvatarPicker && (
         <AvatarPicker
-          onSelect={avatar => onUpdateAvatar(user.id, avatar)}
+          onSelect={avatar => { setPendingAvatar(avatar); setShowAvatarPicker(false) }}
           onClose={() => setShowAvatarPicker(false)}
         />
       )}
       <div className="settings-panel" onClick={e => e.stopPropagation()}>
         <div className="settings-header">
           <h2>设置</h2>
-          <button className="settings-close" onClick={() => { stopPreview(); onClose() }}>×</button>
+          <button
+            className={`settings-close${isDirty && hoverClose ? ' save-mode' : ''}`}
+            onClick={handleCloseClick}
+            onMouseEnter={() => setHoverClose(true)}
+            onMouseLeave={() => setHoverClose(false)}
+            title={isDirty && hoverClose ? '保存并关闭' : '关闭'}
+          >
+            {isDirty && hoverClose ? (
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 14a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm2-10H6V4h8v3z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              </svg>
+            )}
+          </button>
         </div>
 
         {/* ── 子标签页 ── */}
@@ -215,7 +256,7 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
             <div className="settings-section">
               <label>头像</label>
               <button className="settings-avatar-btn" onClick={() => setShowAvatarPicker(true)}>
-                <UserAvatar avatar={user.avatar} size={64} />
+                <UserAvatar avatar={pendingAvatar ?? user.avatar} size={64} />
                 <span className="settings-avatar-hint">点击更换</span>
               </button>
             </div>
@@ -223,15 +264,12 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
             {/* ── 用户名 ── */}
             <div className="settings-section">
               <label>用户名</label>
-              <div className="settings-row">
-                <input
-                  type="text"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  className="settings-input"
-                />
-                <button className="settings-save-btn" onClick={handleSaveUsername}>保存</button>
-              </div>
+              <input
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="settings-input"
+              />
             </div>
 
             {/* ── 密码 ── */}
@@ -279,13 +317,6 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
                   className="settings-input"
                 />
               </div>
-              <button
-                className="settings-save-btn"
-                onClick={handleSavePassword}
-                disabled={saving === 'password'}
-              >
-                {saving === 'password' ? '保存中…' : '保存密码'}
-              </button>
             </div>
 
             {/* ── 数据导入/导出 ── */}
@@ -308,7 +339,6 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
 
         {settingsTab === 'music' && (
           <div className="music-page">
-            {/* ── 统计 ── */}
             <div className="music-stats">
               <span>共 {allTracks.length} 首</span>
               <span style={{ fontSize: 12 }}>
@@ -328,7 +358,6 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
               </span>
             </div>
 
-            {/* ── 添加按钮 ── */}
             <div className="music-add-row">
               <button className="settings-save-btn" onClick={() => musicInputRef.current?.click()}>
                 + 添加本地音乐
@@ -342,7 +371,6 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
               />
             </div>
 
-            {/* ── 曲目列表 ── */}
             <div className="music-track-list">
               {allTracks.map((t, i) => (
                 <div key={`${t.builtin ? 'b' : 'c'}-${i}`} className={`music-track-item${previewTrack === i ? ' playing' : ''}`}>
@@ -378,7 +406,6 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
               ))}
             </div>
 
-            {/* ── 音乐播放器开关 ── */}
             <div className="music-toggle-row">
               <span>页面顶部显示播放器</span>
               <button
@@ -394,6 +421,17 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
               </button>
             </div>
           </div>
+        )}
+
+        {/* ── 底部全局保存 ── */}
+        {isDirty && (
+          <button
+            className="settings-save-all"
+            onClick={handleSaveAll}
+            disabled={saving}
+          >
+            {saving ? '保存中…' : '保存设置'}
+          </button>
         )}
 
         {error && <p className="settings-error">{error}</p>}
