@@ -6,7 +6,7 @@ import {
 import { getCategoryIcon, getCategoryColor } from '../constants/categories'
 import './Charts.css'
 
-const FALLBACK_COLORS = ['#6366f1','#f97316','#3b82f6','#ec4899','#a855f7','#ef4444','#14b8a6','#f59e0b','#6b7280','#10b981']
+const FALLBACK_COLORS = ['#D4AF37','#f97316','#3b82f6','#ec4899','#a855f7','#ef4444','#14b8a6','#10b981','#6b7280','#F0C968']
 
 function useDarkMode() {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches
@@ -51,11 +51,11 @@ function buildDailyData(expenses, monthKey) {
 export function Charts({ expenses }) {
   const [drillMonth, setDrillMonth] = useState(null)
   const dark = useDarkMode()
-  const tickColor = dark ? '#aaaaaa' : '#666666'
-  const gridColor = dark ? '#2e2e2e' : '#f0f0f0'
+  const tickColor = dark ? '#F0C968' : '#7A5A2A'
+  const gridColor = dark ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.20)'
   const tooltipStyle = dark
-    ? { backgroundColor: '#1e1e1e', border: '1px solid #333', color: '#efefef' }
-    : { backgroundColor: '#fff', border: '1px solid #e0e0e0', color: '#1a1a1a' }
+    ? { backgroundColor: '#221C0A', border: '1px solid rgba(212,175,55,0.3)', color: '#FFF7E1', borderRadius: '8px' }
+    : { backgroundColor: '#FFFCF2', border: '1px solid rgba(212,175,55,0.3)', color: '#3D2B0A', borderRadius: '8px' }
 
   if (expenses.length === 0) {
     return <div className="charts-empty">添加消费记录后，图表将显示在这里</div>
@@ -117,7 +117,7 @@ export function Charts({ expenses }) {
                 <XAxis dataKey="day" tick={{ fontSize: 11, fill: tickColor }} interval={4} />
                 <YAxis tick={{ fontSize: 11, fill: tickColor }} />
                 <Tooltip formatter={v => `¥${v}`} contentStyle={tooltipStyle} />
-                <Bar dataKey="total" fill="#6366f1" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="total" fill="#D4AF37" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </>
@@ -140,7 +140,7 @@ export function Charts({ expenses }) {
                   {monthlyData.map((entry, i) => (
                     <Cell
                       key={i}
-                      fill={entry.total > 0 ? '#6366f1' : (dark ? '#2e2e2e' : '#e5e5e5')}
+                      fill={entry.total > 0 ? '#D4AF37' : (dark ? 'rgba(212,175,55,0.1)' : 'rgba(212,175,55,0.15)')}
                       fillOpacity={entry.total > 0 ? 1 : 0.5}
                     />
                   ))}

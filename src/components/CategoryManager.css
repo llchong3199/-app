@@ -1,15 +1,17 @@
 .category-manager {
   background: var(--surface);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 24px;
   box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
   transition: background 0.3s;
 }
 
 .category-manager h3 {
   margin: 0 0 16px;
   font-size: 16px;
-  color: var(--text);
+  font-weight: 700;
+  color: var(--gold-deep);
 }
 
 .category-input-row {
@@ -31,25 +33,23 @@
 }
 
 .category-input-row input:focus {
-  border-color: #6366f1;
+  border-color: var(--gold-primary);
   background: var(--input-focus);
 }
 
 .category-input-row button {
-  background: #6366f1;
-  color: #fff;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  color: var(--gold-deep);
   border: none;
   border-radius: 8px;
   padding: 9px 18px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
 }
 
-.category-input-row button:hover {
-  background: #4f46e5;
-}
+.category-input-row button:hover { opacity: 0.88; }
 
 .cat-error {
   color: #ef4444;
@@ -69,17 +69,18 @@
   align-items: center;
   gap: 6px;
   background: var(--cat-tag-bg);
-  color: #6366f1;
+  color: var(--gold-deep);
   border-radius: 20px;
   padding: 5px 12px;
   font-size: 13px;
   font-weight: 500;
+  border: 1px solid var(--border);
 }
 
 .category-tag button {
   background: none;
   border: none;
-  color: #a5b4fc;
+  color: var(--gold-copper);
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
@@ -87,6 +88,4 @@
   transition: color 0.2s;
 }
 
-.category-tag button:hover {
-  color: #ef4444;
-}
+.category-tag button:hover { color: #ef4444; }

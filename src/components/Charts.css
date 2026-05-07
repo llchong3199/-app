@@ -13,16 +13,18 @@
 
 .chart-card {
   background: var(--surface);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 24px;
   box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
   transition: background 0.3s;
 }
 
 .chart-card h3 {
   margin: 0 0 4px;
   font-size: 16px;
-  color: var(--text);
+  font-weight: 700;
+  color: var(--gold-deep);
 }
 
 .chart-total {
@@ -44,9 +46,7 @@
   margin-bottom: 4px;
 }
 
-.chart-card-header h3 {
-  margin: 0;
-}
+.chart-card-header h3 { margin: 0; }
 
 .chart-back-btn {
   background: none;
@@ -62,12 +62,10 @@
 }
 
 .chart-back-btn:hover {
-  border-color: #6366f1;
-  color: #6366f1;
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
 }
 
 @media (max-width: 700px) {
-  .charts {
-    grid-template-columns: 1fr;
-  }
+  .charts { grid-template-columns: 1fr; }
 }

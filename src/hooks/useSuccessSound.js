@@ -1,32 +1,50 @@
-import { useCallback } from 'react'
+import { useRef, useCallback } from 'react'
+
+// E5 → G#5 → B5 ascending arpeggio
+const NOTES = [
+  { freq: 659.3, delay: 0,    duration: 0.4 },
+  { freq: 830.6, delay: 0.13, duration: 0.4 },
+  { freq: 987.8, delay: 0.26, duration: 0.5 },
+]
 
 export function useSuccessSound() {
-  const playSound = useCallback(() => {
+  const ctxRef = useRef(null)
+
+  return useCallback(() => {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)()
-      const t = ctx.currentTime
+      if (!ctxRef.current) {
+        ctxRef.current = new (window.AudioContext || window.webkitAudioContext)()
+      }
+      const ctx = ctxRef.current
 
-      // 基频 + 二次谐波，模拟真实铃声「叮」的泛音
-      const freqs = [1318, 2637]
-      const gains = [0.45, 0.18]
+      function play() {
+        const now = ctx.currentTime
+        NOTES.forEach(({ freq, delay, duration }) => {
+          const osc = ctx.createOscillator()
+          const gain = ctx.createGain()
+          osc.connect(gain)
+          gain.connect(ctx.destination)
 
-      freqs.forEach((freq, i) => {
-        const osc = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.connect(gain)
-        gain.connect(ctx.destination)
-        osc.type = 'sine'
-        osc.frequency.setValueAtTime(freq, t)
-        gain.gain.setValueAtTime(0, t)
-        gain.gain.linearRampToValueAtTime(gains[i], t + 0.005)   // 极短上升
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2)   // 慢衰减
-        osc.start(t)
-        osc.stop(t + 1.2)
-      })
-    } catch {
-      // AudioContext not supported — silent fallback
+          osc.type = 'triangle'
+          osc.frequency.setValueAtTime(freq, now + delay)
+
+          const t0 = now + delay
+          gain.gain.setValueAtTime(0, t0)
+          gain.gain.linearRampToValueAtTime(0.5, t0 + 0.01)
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration)
+
+          osc.start(t0)
+          osc.stop(t0 + duration)
+        })
+      }
+
+      if (ctx.state === 'suspended') {
+        ctx.resume().then(play).catch(e => console.error('[sound] resume failed', e))
+      } else {
+        play()
+      }
+    } catch (e) {
+      console.error('[sound] failed', e)
     }
   }, [])
-
-  return playSound
 }

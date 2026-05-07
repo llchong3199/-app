@@ -23,13 +23,56 @@
 .app-header h1 {
   font-size: 26px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--gold-deep);
+  letter-spacing: 0.5px;
 }
 
 .month-total {
   font-size: 15px;
-  color: #6366f1;
+  color: var(--gold-primary);
   font-weight: 600;
+}
+
+.header-user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+}
+
+.header-avatar-btn:hover { opacity: 0.7; }
+
+.header-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.logout-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
 .tabs {
@@ -53,12 +96,13 @@
 }
 
 .tab:hover {
-  color: #6366f1;
+  color: var(--gold-primary);
 }
 
 .tab.active {
-  color: #6366f1;
-  border-bottom-color: #6366f1;
+  color: var(--gold-deep);
+  border-bottom-color: var(--gold-primary);
+  font-weight: 600;
 }
 
 .app-main {
@@ -104,7 +148,7 @@
 
 .resize-handle:hover::before,
 .resize-handle:active::before {
-  background: #6366f1;
+  background: var(--gold-primary);
   width: 3px;
 }
 
@@ -133,6 +177,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-left: 12px;
 }
 
 @media (max-width: 720px) {
@@ -154,10 +199,61 @@
   justify-content: space-between;
 }
 
+.list-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .list-header h2 {
   font-size: 17px;
   font-weight: 600;
   color: var(--text);
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  padding: 2px 4px;
+}
+
+.month-nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.month-nav-btn:hover {
+  color: var(--gold-primary);
+  background: var(--border-2);
+}
+
+.month-nav-label {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold-deep);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.month-nav-label:hover {
+  color: var(--gold-primary);
+  background: var(--border-2);
 }
 
 .filter-select {
@@ -173,5 +269,5 @@
 }
 
 .filter-select:focus {
-  border-color: #6366f1;
+  border-color: var(--gold-primary);
 }
