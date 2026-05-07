@@ -68,18 +68,23 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const animRef = useRef(null)
 
   function setupAnalyser(audio) {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext
-    if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx()
-    const ctx = audioCtxRef.current
-    try { sourceRef.current?.disconnect() } catch {}
-    const analyser = ctx.createAnalyser()
-    analyser.fftSize = 32
-    const source = ctx.createMediaElementSource(audio)
-    source.connect(analyser)
-    analyser.connect(ctx.destination)
-    analyserRef.current = analyser
-    sourceRef.current = source
-    if (ctx.state === 'suspended') ctx.resume()
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext
+      if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx()
+      const ctx = audioCtxRef.current
+      try { sourceRef.current?.disconnect() } catch {}
+      const analyser = ctx.createAnalyser()
+      analyser.fftSize = 32
+      const source = ctx.createMediaElementSource(audio)
+      source.connect(analyser)
+      analyser.connect(ctx.destination)
+      analyserRef.current = analyser
+      sourceRef.current = source
+      if (ctx.state === 'suspended') ctx.resume()
+    } catch (e) {
+      // analyser 初始化失败不影响音频播放
+      console.warn('[audio] analyser 跳过:', e)
+    }
   }
 
   function drawVisualizer() {
@@ -126,12 +131,20 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     audio.addEventListener('play', () => setMusicPlaying(true))
     audio.addEventListener('pause', () => setMusicPlaying(false))
     audio.addEventListener('ended', () => nextTrack())
+    audio.addEventListener('error', (e) => {
+      const msg = e.target?.error?.message || '未知错误'
+      console.warn('[audio] 播放失败:', msg)
+      setTimeout(() => nextTrack(), 1000)
+    })
 
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current.currentTime = 0
     }
-    audio.play().catch(err => console.warn('[audio]', err))
+    audio.play().catch(err => {
+      console.warn('[audio] play() 失败:', err)
+      setTimeout(() => nextTrack(), 1000)
+    })
     audioRef.current = audio
     setupAnalyser(audio)
     setCurrentTrack(index)

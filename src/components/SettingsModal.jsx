@@ -60,13 +60,23 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
       return
     }
     stopPreview()
+    clearMsg()
     const src = file.startsWith('data:') ? file : encodeURI(file)
     const audio = new Audio(src)
     audio.volume = 0.3
     audio.addEventListener('ended', () => { setPreviewPlaying(false); setPreviewTrack(null) })
     audio.addEventListener('pause', () => setPreviewPlaying(false))
     audio.addEventListener('play', () => setPreviewPlaying(true))
-    audio.play().catch(() => {})
+    audio.addEventListener('error', () => {
+      setError(`无法播放「${name}」，文件格式可能不受支持或已损坏`)
+      setPreviewPlaying(false)
+      setPreviewTrack(null)
+    })
+    audio.play().catch(() => {
+      setError(`无法播放「${name}」，文件格式可能不受支持或已损坏`)
+      setPreviewPlaying(false)
+      setPreviewTrack(null)
+    })
     previewRef.current = audio
     setPreviewTrack(idx)
     setPreviewPlaying(true)
@@ -134,14 +144,26 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   function handleAddMusic(e) {
     const files = e.target.files
     if (!files?.length) return
-    const reader = new FileReader()
+    clearMsg()
     const file = files[0]
+    if (file.size > 5 * 1024 * 1024) {
+      setError('文件太大（超过 5MB），建议压缩后再试')
+      e.target.value = ''
+      return
+    }
     const name = file.name.replace(/\.(mp3|wav|ogg|flac|m4a)$/i, '')
+    const reader = new FileReader()
     reader.onload = () => {
-      const tracks = [...customTracks, { name, data: reader.result }]
-      setCustomTracks(tracks)
-      localStorage.setItem('et-custom-music', JSON.stringify(tracks))
-      setSuccess(`已添加: ${name}`)
+      try {
+        const tracks = [...customTracks, { name, data: reader.result }]
+        setCustomTracks(tracks)
+        localStorage.setItem('et-custom-music', JSON.stringify(tracks))
+        setSuccess(`已添加: ${name}`)
+      } catch (err) {
+        if (err.name === 'QuotaExceededError' || err.code === 22) {
+          setError('存储空间不足，请移除一些自定义歌曲后再试')
+        } else { setError('保存失败: ' + err.message) }
+      }
     }
     reader.onerror = () => setError('读取文件失败')
     reader.readAsDataURL(file)
