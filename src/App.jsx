@@ -18,6 +18,14 @@ import './App.css'
 
 const TABS = ['记录', '图表', '预算', '储蓄', '分类']
 
+const PLAYLIST = [
+  { name: 'Kiss The Rain', file: '/music/Kiss The Rain（淡淡伤感）.mp3' },
+  { name: '風のように', file: '/music/S.E.N.S. - 風のように.mp3' },
+  { name: '交界 (伴奏)', file: '/music/交界 (伴奏).mp3' },
+  { name: '小野', file: '/music/山野煮雨 - 小野.mp3' },
+  { name: '生命之名', file: '/music/神隱少女 - 生命之名.mp3' },
+]
+
 function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUpdatePassword }) {
   const {
     expenses, categories, addExpense, deleteExpense, editExpense, addCategory, deleteCategory,
@@ -38,17 +46,66 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const playSound = useSuccessSound()
 
   const audioRef = useRef(null)
+  const [musicPlaying, setMusicPlaying] = useState(true)
+  const [musicTime, setMusicTime] = useState(0)
+  const [musicDuration, setMusicDuration] = useState(0)
+  const [currentTrack, setCurrentTrack] = useState(0)
+  const [trackLabel, setTrackLabel] = useState(PLAYLIST[0].name)
 
-  useEffect(() => {
-    const src = encodeURI('/神隱少女 - 生命之名.mp3')
+  function playTrack(index) {
+    const src = encodeURI(PLAYLIST[index].file)
     const audio = new Audio(src)
-    audio.loop = true
     audio.volume = 0.2
     audio.preload = 'auto'
+
+    audio.addEventListener('timeupdate', () => setMusicTime(audio.currentTime))
+    audio.addEventListener('loadedmetadata', () => setMusicDuration(audio.duration))
+    audio.addEventListener('play', () => setMusicPlaying(true))
+    audio.addEventListener('pause', () => setMusicPlaying(false))
+    audio.addEventListener('ended', () => nextTrack())
+
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
     audio.play().catch(err => console.warn('[audio]', err))
     audioRef.current = audio
-    return () => { audio.pause(); audio.currentTime = 0 }
+    setCurrentTrack(index)
+    setTrackLabel(PLAYLIST[index].name)
+    setMusicTime(0)
+    setMusicDuration(0)
+  }
+
+  useEffect(() => {
+    playTrack(0)
+    return () => { if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0 } }
   }, [])
+
+  function toggleMusic() {
+    const a = audioRef.current
+    if (!a) return
+    if (a.paused) { a.play() } else { a.pause() }
+  }
+
+  function prevTrack() {
+    const prev = (currentTrack - 1 + PLAYLIST.length) % PLAYLIST.length
+    playTrack(prev)
+  }
+
+  function nextTrack() {
+    const next = (currentTrack + 1) % PLAYLIST.length
+    playTrack(next)
+  }
+
+  function seekMusic(e) {
+    const a = audioRef.current
+    if (!a || !musicDuration) return
+    const bar = e.currentTarget
+    const rect = bar.getBoundingClientRect()
+    const pct = (e.clientX - rect.left) / rect.width
+    a.currentTime = pct * musicDuration
+    setMusicTime(a.currentTime)
+  }
 
   const [leftWidth, setLeftWidth] = useState(300)
   const dragRef = useRef(null)
@@ -172,6 +229,31 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
             </button>
           ))}
         </nav>
+
+        {/* ── 音乐播放器 ── */}
+        <div className="music-bar">
+          <div className={`music-vinyl ${musicPlaying ? 'spinning' : ''}`}>
+            <span>🎵</span>
+          </div>
+          <div className="music-controls">
+            <button className="music-ctrl-btn" onClick={prevTrack} title="上一首">⏮</button>
+            <button className="music-ctrl-btn music-play-btn" onClick={toggleMusic} title={musicPlaying ? '暂停' : '播放'}>
+              {musicPlaying ? '⏸' : '▶️'}
+            </button>
+            <button className="music-ctrl-btn" onClick={nextTrack} title="下一首">⏭</button>
+          </div>
+          <div className="music-info">
+            <span className="music-track-name">{trackLabel}</span>
+            <div className="music-progress-wrap" onMouseDown={seekMusic}>
+              <div className="music-progress-bar">
+                <div
+                  className="music-progress-fill"
+                  style={{ width: musicDuration ? `${(musicTime / musicDuration) * 100}%` : '0%' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </header>
 
       <main className="app-main">
