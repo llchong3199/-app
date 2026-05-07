@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { AvatarPicker, UserAvatar } from './AvatarPicker'
 import './SettingsModal.css'
@@ -13,6 +13,14 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   const [success, setSuccess] = useState('')
   const [saving, setSaving] = useState('')
   const importRef = useRef(null)
+  const musicInputRef = useRef(null)
+  const [showMusic, setShowMusic] = useState(() => localStorage.getItem('et-show-music') !== 'false')
+  const [customTracks, setCustomTracks] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('et-custom-music') || '[]') }
+    catch { return [] }
+  })
+
+  function clearMsg() { setError(''); setSuccess('') }
 
   function clearMsg() { setError(''); setSuccess('') }
 
@@ -43,6 +51,38 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     } finally {
       setSaving('')
     }
+  }
+
+  function toggleShowMusic() {
+    const next = !showMusic
+    setShowMusic(next)
+    localStorage.setItem('et-show-music', next)
+    clearMsg()
+    setSuccess(next ? '音乐播放器已显示' : '音乐播放器已隐藏')
+  }
+
+  function handleAddMusic(e) {
+    const files = e.target.files
+    if (!files?.length) return
+    const reader = new FileReader()
+    const file = files[0]
+    const name = file.name.replace(/\.(mp3|wav|ogg|flac|m4a)$/i, '')
+    reader.onload = () => {
+      const tracks = [...customTracks, { name, data: reader.result }]
+      setCustomTracks(tracks)
+      localStorage.setItem('et-custom-music', JSON.stringify(tracks))
+      setSuccess(`已添加: ${name}`)
+    }
+    reader.onerror = () => setError('读取文件失败')
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  function handleDeleteTrack(i) {
+    const tracks = customTracks.filter((_, idx) => idx !== i)
+    setCustomTracks(tracks)
+    localStorage.setItem('et-custom-music', JSON.stringify(tracks))
+    setSuccess('已移除自定义音乐')
   }
 
   function handleExport() {
@@ -176,6 +216,43 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
           >
             {saving === 'password' ? '保存中…' : '保存密码'}
           </button>
+        </div>
+
+        {/* ── 音乐设置 ── */}
+        <div className="settings-section">
+          <label>音乐设置</label>
+          <div className="settings-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 14, color: 'var(--text)' }}>显示音乐播放器</span>
+            <button
+              className={`toggle-switch ${showMusic ? 'on' : ''}`}
+              onClick={toggleShowMusic}
+              aria-label="切换音乐播放器"
+            >
+              <span className="toggle-knob" />
+            </button>
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <button className="settings-export-btn" onClick={() => musicInputRef.current?.click()}>
+              添加本地音乐
+            </button>
+            <input
+              ref={musicInputRef}
+              type="file"
+              accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*"
+              style={{ display: 'none' }}
+              onChange={handleAddMusic}
+            />
+          </div>
+          {customTracks.length > 0 && (
+            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {customTracks.map((t, i) => (
+                <div key={i} className="custom-track-row">
+                  <span className="custom-track-name">🎵 {t.name}</span>
+                  <button className="custom-track-del" onClick={() => handleDeleteTrack(i)} title="移除">×</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── 数据导入/导出 ── */}

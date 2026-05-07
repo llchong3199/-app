@@ -18,13 +18,21 @@ import './App.css'
 
 const TABS = ['记录', '图表', '预算', '储蓄', '分类']
 
-const PLAYLIST = [
+const BUILTIN_PLAYLIST = [
   { name: 'Kiss The Rain', file: '/music/Kiss The Rain（淡淡伤感）.mp3' },
   { name: '風のように', file: '/music/S.E.N.S. - 風のように.mp3' },
   { name: '交界 (伴奏)', file: '/music/交界 (伴奏).mp3' },
   { name: '小野', file: '/music/山野煮雨 - 小野.mp3' },
   { name: '生命之名', file: '/music/神隱少女 - 生命之名.mp3' },
 ]
+
+function getFullPlaylist() {
+  try {
+    const custom = JSON.parse(localStorage.getItem('et-custom-music') || '[]')
+    if (!custom.length) return BUILTIN_PLAYLIST
+    return [...BUILTIN_PLAYLIST, ...custom.map(t => ({ name: t.name, file: t.data }))]
+  } catch { return BUILTIN_PLAYLIST }
+}
 
 function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUpdatePassword }) {
   const {
@@ -40,6 +48,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const [successExpense, setSuccessExpense] = useState(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showPiggy, setShowPiggy] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
   const [piggyIncome, setPiggyIncome] = useState(0)
   const quoteIndexRef = useRef(0)
   const closeTimerRef = useRef(null)
@@ -50,7 +59,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const [musicTime, setMusicTime] = useState(0)
   const [musicDuration, setMusicDuration] = useState(0)
   const [currentTrack, setCurrentTrack] = useState(0)
-  const [trackLabel, setTrackLabel] = useState(PLAYLIST[0].name)
+  const [trackLabel, setTrackLabel] = useState(() => getFullPlaylist()[0]?.name ?? BUILTIN_PLAYLIST[0].name)
   const audioCtxRef = useRef(null)
   const analyserRef = useRef(null)
   const sourceRef = useRef(null)
@@ -104,7 +113,9 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   }, [])
 
   function playTrack(index) {
-    const src = encodeURI(PLAYLIST[index].file)
+    const pl = getFullPlaylist()
+    const file = pl[index]?.file ?? pl[0].file
+    const src = file.startsWith('data:') ? file : encodeURI(file)
     const audio = new Audio(src)
     audio.volume = 0.2
     audio.preload = 'auto'
@@ -123,7 +134,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     audioRef.current = audio
     setupAnalyser(audio)
     setCurrentTrack(index)
-    setTrackLabel(PLAYLIST[index].name)
+    setTrackLabel(pl[index]?.name ?? '')
     setMusicTime(0)
     setMusicDuration(0)
   }
@@ -140,12 +151,14 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   }
 
   function prevTrack() {
-    const prev = (currentTrack - 1 + PLAYLIST.length) % PLAYLIST.length
+    const len = getFullPlaylist().length
+    const prev = (currentTrack - 1 + len) % len
     playTrack(prev)
   }
 
   function nextTrack() {
-    const next = (currentTrack + 1) % PLAYLIST.length
+    const len = getFullPlaylist().length
+    const next = (currentTrack + 1) % len
     playTrack(next)
   }
 
@@ -226,6 +239,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     .reduce((s, e) => s + e.amount, 0)
 
   const freshAvatar = users.find(u => u.id === user.id)?.avatar ?? user.avatar
+  const showMusic = localStorage.getItem('et-show-music') !== 'false'
 
   return (
     <div className="app">
@@ -242,7 +256,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
           onUpdateAvatar={onUpdateAvatar}
           onUpdateUsername={onUpdateUsername}
           onUpdatePassword={onUpdatePassword}
-          onClose={() => setShowSettings(false)}
+          onClose={() => { setShowSettings(false); setRefreshKey(k => k + 1) }}
         />
       )}
       {showPiggy && piggyIncome > 0 && (
@@ -271,7 +285,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
           </div>
         </div>
 
-        {/* ── 音乐播放器 ── */}
+        {showMusic && (
         <div className="music-bar">
           <div className={`music-vinyl ${musicPlaying ? 'spinning' : ''}`}>
             <span>🎵</span>
@@ -317,6 +331,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
             </div>
           </div>
         </div>
+        )}
 
         <nav className="tabs">
           {TABS.map(t => (
