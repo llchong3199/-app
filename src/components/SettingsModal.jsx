@@ -132,13 +132,12 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     }
   }
 
-  function handleCloseClick() {
+  async function handleCloseClick() {
     if (isDirty && hoverClose) {
-      handleSaveAll()
-    } else {
-      stopPreview()
-      onClose()
+      await handleSaveAll()
     }
+    stopPreview()
+    onClose()
   }
 
   function handleAddMusic(e) {

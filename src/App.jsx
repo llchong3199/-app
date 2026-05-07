@@ -30,9 +30,14 @@ function getFullPlaylist() {
   try {
     const hiddenIdx = JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]')
     const builtin = BUILTIN_PLAYLIST.filter((_, i) => !hiddenIdx.includes(i))
-    const custom = JSON.parse(localStorage.getItem('et-custom-music') || '[]')
-    return [...builtin, ...custom.map(t => ({ name: t.name, file: t.data }))]
-  } catch { return BUILTIN_PLAYLIST }
+    const raw = localStorage.getItem('et-custom-music')
+    const custom = raw ? JSON.parse(raw) : []
+    const customTracks = custom.map(t => ({ name: t.name, file: t.data })).filter(t => t.file)
+    return [...builtin, ...customTracks]
+  } catch (e) {
+    console.warn('[playlist] 获取失败:', e)
+    return BUILTIN_PLAYLIST
+  }
 }
 
 function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUpdatePassword }) {
@@ -160,6 +165,19 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     playTrack(0)
     return () => { if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0 } }
   }, [])
+
+  // 设置关闭后刷新当前曲目信息
+  useEffect(() => {
+    if (refreshKey === 0) return
+    const pl = getFullPlaylist()
+    if (currentTrack >= pl.length && pl.length > 0) {
+      const next = currentTrack % pl.length
+      setCurrentTrack(next)
+      setTrackLabel(pl[next]?.name ?? '')
+    } else {
+      setTrackLabel(pl[currentTrack]?.name ?? '')
+    }
+  }, [refreshKey])
 
   function toggleMusic() {
     const a = audioRef.current
