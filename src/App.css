@@ -7,10 +7,11 @@
 .app-header {
   position: sticky;
   top: 0;
-  background: var(--bg);
+  background: transparent;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   padding: 24px 0 0;
   z-index: 10;
-  transition: background 0.3s;
 }
 
 .header-content {
@@ -25,6 +26,13 @@
   font-weight: 700;
   color: var(--gold-deep);
   letter-spacing: 0.5px;
+}
+
+.header-deco {
+  font-size: 24px;
+  line-height: 1;
+  animation: floatSlow 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 6px rgba(255,107,157,0.3));
 }
 
 .month-total {
@@ -78,7 +86,7 @@
 .tabs {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid var(--border-2);
+  border-bottom: 1px solid rgba(255, 107, 157, 0.35);
   margin-bottom: 24px;
 }
 
@@ -217,7 +225,7 @@
   gap: 2px;
   background: var(--surface);
   border: 1px solid var(--border-2);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 2px 4px;
 }
 
@@ -259,7 +267,7 @@
 .filter-select {
   padding: 7px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
   outline: none;
   background: var(--surface);

@@ -110,7 +110,7 @@ export function SavingsPage({ savingsGoals, monthlyIncome, onAdd, onDelete, onDe
 
       {/* ── 顶部操作栏 ── */}
       <div className="savings-topbar">
-        <h2 className="savings-title">🐷 储蓄目标</h2>
+        <h2 className="savings-title">🎀 储蓄目标</h2>
         {!showAddForm && (
           <button className="savings-add-btn" onClick={() => setShowAddForm(true)}>
             + 新增目标
@@ -185,9 +185,9 @@ export function SavingsPage({ savingsGoals, monthlyIncome, onAdd, onDelete, onDe
       {/* ── 空状态 ── */}
       {savingsGoals.length === 0 && !showAddForm && (
         <div className="savings-empty">
-          <span className="savings-empty-icon">🐷</span>
+          <span className="savings-empty-icon">🎀</span>
           <p>还没有储蓄目标</p>
-          <p className="savings-empty-sub">设置一个目标，我帮你存钱！</p>
+          <p className="savings-empty-sub">喵～ 来设定第一个目标吧！</p>
           <button className="savings-add-btn" style={{ marginTop: 16 }} onClick={() => setShowAddForm(true)}>
             + 添加第一个目标
           </button>
@@ -294,7 +294,7 @@ export function SavingsPage({ savingsGoals, monthlyIncome, onAdd, onDelete, onDe
                 <div className="goal-card-actions">
                   {!completed && (
                     <button className="gca-deposit" onClick={() => setDepositingId(goal.id)}>
-                      🪙 存入
+                      🎀 存入
                     </button>
                   )}
                   <button className="gca-delete" onClick={() => onDelete(goal.id)}>删除</button>

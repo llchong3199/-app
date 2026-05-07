@@ -21,7 +21,7 @@
   align-items: center;
   gap: 12px;
   background: var(--surface);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 14px 16px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-2);
@@ -38,7 +38,7 @@
   flex-shrink: 0;
   width: 54px;
   height: 54px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid transparent;
   display: flex;
   flex-direction: column;
@@ -140,7 +140,7 @@
 
 .edit-panel {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: 22px;
   width: 340px;
   padding: 24px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.3);
@@ -199,7 +199,7 @@
 .edit-field select {
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   outline: none;
   background: var(--input-bg);
@@ -218,7 +218,7 @@
   min-height: 52px;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   background: var(--input-bg);
   color: var(--text);
@@ -265,26 +265,26 @@
   padding: 10px;
   background: var(--input-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   color: var(--text-2);
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.edit-cancel-btn:hover { border-color: var(--text-2); }
+.edit-cancel-btn:hover { border-color: var(--text-2); background: var(--cat-tag-bg); }
 
 .edit-save-btn {
   flex: 2;
   padding: 10px;
   background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 700;
   color: var(--gold-deep);
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all .3s ease;
 }
 
-.edit-save-btn:hover { opacity: 0.88; }
+.edit-save-btn:hover { opacity: 0.88; transform: translateY(-1px); }

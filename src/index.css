@@ -1,60 +1,98 @@
 :root {
-  --gold-primary:   #D4AF37;
-  --gold-hover:     #B8960C;
-  --gold-copper:    #F0C968;
-  --gold-champagne: #FFE7A1;
-  --gold-white:     #FFF7E1;
-  --gold-deep:      #7A5A2A;
+  /* ── Hello Kitty 调色盘 ── */
+  --bg:              #FFF9F7;
+  --bg-gradient:     linear-gradient(180deg, #FFF9F7 0%, #FFD6E7 45%, #FFF1F6 100%);
+  --surface:         #FFFFFF;
+  --surface-2:       #FFF5F8;
 
-  --bg:           #FFF7E1;
-  --surface:      #FFFCF2;
-  --text:         #3D2B0A;
-  --text-2:       #7A5A2A;
-  --text-3:       #A08050;
-  --border:       rgba(212,175,55,0.30);
-  --border-2:     rgba(212,175,55,0.18);
-  --input-bg:     #FFFEF7;
-  --input-focus:  #FFFFFF;
-  --shadow-sm:    0 1px 6px rgba(122,90,42,0.10);
-  --shadow-md:    0 2px 14px rgba(122,90,42,0.14);
-  --shadow-hover: 0 4px 18px rgba(122,90,42,0.22);
-  --shadow-lg:    0 20px 60px rgba(0,0,0,0.20);
-  --divider:      rgba(212,175,55,0.20);
-  --cat-tag-bg:   rgba(240,201,104,0.18);
-}
+  /* ── 主色：Hello Kitty 粉 ── */
+  --gold-accent:     #FFB7D1;
+  --gold-primary:    #FF6B9D;
+  --gold-copper:     #FF8BBF;
+  --gold-thread:     #D4316B;
+  --gold-deep:       #C0306A;
+  --gold-dim:        #FFE4EF;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:           #1A1408;
-    --surface:      #221C0A;
-    --text:         #FFF7E1;
-    --text-2:       #F0C968;
-    --text-3:       #B8960C;
-    --border:       rgba(212,175,55,0.22);
-    --border-2:     rgba(212,175,55,0.13);
-    --input-bg:     #1E1810;
-    --input-focus:  #252010;
-    --shadow-sm:    0 1px 6px rgba(0,0,0,0.50);
-    --shadow-md:    0 2px 12px rgba(0,0,0,0.60);
-    --shadow-hover: 0 4px 18px rgba(0,0,0,0.70);
-    --shadow-lg:    0 20px 60px rgba(0,0,0,0.75);
-    --divider:      rgba(212,175,55,0.12);
-    --cat-tag-bg:   rgba(240,201,104,0.10);
-  }
+  /* ── 文字 ── */
+  --text:            #2D1420;
+  --text-2:          #A0407A;
+  --text-3:          #C890AD;
+
+  /* ── 描边 & 输入 ── */
+  --border:          rgba(255, 107, 157, 0.28);
+  --border-2:        rgba(255, 107, 157, 0.12);
+  --input-bg:        #FFF5F8;
+  --input-focus:     #FFFFFF;
+
+  /* ── 辅助色（规范指定色值） ── */
+  --accent-amber:    #FA8C16;
+  --accent-red:      #E8002D;
+  --accent-green:    #52C41A;
+  --candy-pink:      #FFB7D5;
+  --peach-pink:      #FF8FB1;
+  --strawberry-red:  #FF5F8F;
+  --cream-gold:      #F8E7C9;
+  --starlight-yellow:#FFE68A;
+  --sky-blue:        #D9F3FF;
+  --mint-green:      #DDF6E4;
+
+  /* ── 阴影（粉色光晕） ── */
+  --shadow-sm:       0 2px 8px rgba(255,107,157,0.12),
+                     0 0 0 1px rgba(255,107,157,0.06);
+  --shadow-md:       0 6px 24px rgba(255,107,157,0.16),
+                     0 0 0 1px rgba(255,107,157,0.08);
+  --shadow-hover:    0 8px 32px rgba(255,107,157,0.26),
+                     0 0 0 1px rgba(255,107,157,0.15);
+  --shadow-lg:       0 20px 60px rgba(255,107,157,0.20);
+  --shadow-glow:     0 0 28px rgba(255,107,157,0.35);
+
+  /* ── 玻璃拟态 ── */
+  --glass-bg:        rgba(255, 255, 255, 0.72);
+  --glass-border:    rgba(255, 255, 255, 0.50);
+  --glass-shadow:    0 8px 32px rgba(255, 107, 157, 0.12),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.60);
+
+  /* ── 其他 ── */
+  --divider:         rgba(255, 107, 157, 0.15);
+  --cat-tag-bg:      rgba(255, 107, 157, 0.08);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg);
-  background-image: url('/cloud-pattern.svg');
-  background-size: 320px 200px;
-  background-repeat: repeat;
+  font-family: "Fredoka", "Nunito", "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s, color 0.3s;
 }
 
 #root { min-height: 100vh; }
+
+/* ── Hello Kitty 全局漂浮动画 ── */
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatSlow {
+  0%   { transform: translateY(0px) rotate(-3deg); }
+  50%  { transform: translateY(-6px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(-3deg); }
+}
+
+@keyframes kittyTagWiggle {
+  0%,100% { transform: rotate(-10deg); }
+  50%     { transform: rotate(10deg); }
+}
+
+@keyframes sparkle {
+  0%,100% { opacity: 0.3; transform: scale(0.8); }
+  50%     { opacity: 1;   transform: scale(1.2); }
+}
+
+/* ── 圆角全局样式 ── */
+input, select, button, textarea { font-family: inherit; }

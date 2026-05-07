@@ -1,13 +1,57 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AvatarPicker, UserAvatar } from './AvatarPicker'
 import { DeletePigDialog } from './DeletePigDialog'
 import './AuthScreen.css'
+
+function DragDeco({ style, children }) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const dragRef = useRef(null)
+
+  function onDown(e) {
+    dragRef.current = { sx: e.clientX, sy: e.clientY, ox: offset.x, oy: offset.y }
+  }
+
+  useEffect(() => {
+    function onMove(e) {
+      if (!dragRef.current) return
+      setOffset({
+        x: dragRef.current.ox + e.clientX - dragRef.current.sx,
+        y: dragRef.current.oy + e.clientY - dragRef.current.sy,
+      })
+    }
+    function onUp() { dragRef.current = null }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+  }, [])
+
+  return (
+    <div
+      style={{
+        ...style,
+        position: 'absolute',
+        transform: `translate(${offset.x}px, ${offset.y}px)`,
+        cursor: dragRef.current ? 'grabbing' : 'grab',
+        userSelect: 'none',
+        zIndex: dragRef.current ? 100 : undefined,
+      }}
+      onMouseDown={onDown}
+    >
+      <span className="auth-deco" style={{ pointerEvents: 'none', display: 'block' }}>
+        {children}
+      </span>
+    </div>
+  )
+}
 
 function PwField({ label, placeholder, value, onChange, autoFocus }) {
   const [show, setShow] = useState(false)
 
   function handleChange(e) {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 6)
     onChange({ target: { value: digits } })
   }
 
@@ -18,7 +62,7 @@ function PwField({ label, placeholder, value, onChange, autoFocus }) {
         <input
           type={show ? 'text' : 'password'}
           inputMode="numeric"
-          maxLength={4}
+          maxLength={6}
           placeholder={placeholder}
           value={value}
           onChange={handleChange}
@@ -40,6 +84,33 @@ function PwField({ label, placeholder, value, onChange, autoFocus }) {
       </div>
     </div>
   )
+}
+
+function playLoginSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const now = ctx.currentTime
+    const notes = [
+      { freq: 523.3, time: 0 },
+      { freq: 659.3, time: 0.1 },
+      { freq: 783.99, time: 0.2 },
+      { freq: 1046.5, time: 0.3 },
+    ]
+    notes.forEach(({ freq, time }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, now + time)
+      gain.gain.setValueAtTime(0, now + time)
+      gain.gain.linearRampToValueAtTime(0.3, now + time + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + time + 0.3)
+      osc.start(now + time)
+      osc.stop(now + time + 0.3)
+    })
+    if (ctx.state === 'suspended') ctx.resume()
+  } catch (e) { /* ignore */ }
 }
 
 export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerifyPassword, onDeleteAccount }) {
@@ -74,7 +145,7 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
     e.preventDefault()
     if (!password) { setError('请输入密码'); return }
     setLoading(true); setError('')
-    try { await onLogin(selectedUser.username, password) }
+    try { await onLogin(selectedUser.username, password); playLoginSound() }
     catch (err) { setError(err.message) }
     finally { setLoading(false) }
   }
@@ -82,7 +153,7 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
   async function handleRegister(e) {
     e.preventDefault()
     if (!form.username.trim()) { setError('请输入用户名'); return }
-    if (form.password.length !== 4) { setError('密码须为 4 位数字'); return }
+    if (form.password.length !== 6) { setError('密码须为 6 位数字'); return }
     if (form.password !== form.confirm) { setError('两次密码不一致'); return }
     setLoading(true); setError('')
     try { await onRegister(form.username.trim(), form.password) }
@@ -129,9 +200,15 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
       )}
 
       <div className="auth-brand">
-        <span className="auth-logo">💰</span>
-        <h1>消费记录</h1>
-        <p>记录每一笔，掌握每一分</p>
+        <DragDeco style={{ top: -35, left: -15 }}>🌸</DragDeco>
+        <DragDeco style={{ top: -30, right: -10 }}>✨</DragDeco>
+        <DragDeco style={{ bottom: -28, left: '15%' }}>💕</DragDeco>
+        <DragDeco style={{ top: -28, left: '45%' }}>☁️</DragDeco>
+        <DragDeco style={{ bottom: -32, right: '15%' }}>🍓</DragDeco>
+        <DragDeco style={{ top: -22, left: '30%' }}>⭐</DragDeco>
+        <span className="auth-logo">🎀</span>
+        <h1>Hello 记账</h1>
+        <p>Kitty 陪你，记录每一笔 🎀</p>
       </div>
 
       <div className="auth-card">
@@ -140,20 +217,22 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
         {mode === 'select' && (
           <>
             <h2>选择账户</h2>
-            <div className="user-grid">
-              {users.map(u => (
-                <div key={u.id} className="user-card-wrap">
-                  <button className="user-btn" onClick={() => pickUser(u)}>
-                    <UserAvatar avatar={getAvatar(u)} size={40} />
-                    <span className="user-name">{u.username}</span>
-                  </button>
-                  <button
-                    className="user-edit-btn"
-                    title="修改头像"
-                    onClick={e => { e.stopPropagation(); setEditingAvatarUser(u) }}
-                  >✏️</button>
-                </div>
-              ))}
+            <div className="user-grid-wrap">
+              <div className="user-grid">
+                {users.map(u => (
+                  <div key={u.id} className="user-card-wrap">
+                    <button className="user-btn" onClick={() => pickUser(u)}>
+                      <UserAvatar avatar={getAvatar(u)} size={48} />
+                      <span className="user-name">{u.username}</span>
+                    </button>
+                    <button
+                      className="user-edit-btn"
+                      title="修改头像"
+                      onClick={e => { e.stopPropagation(); setEditingAvatarUser(u) }}
+                    >✏️</button>
+                  </div>
+                ))}
+              </div>
             </div>
             <button className="auth-link" onClick={goRegister}>+ 创建新账户</button>
           </>
@@ -229,13 +308,13 @@ export function AuthScreen({ users, onLogin, onRegister, onUpdateAvatar, onVerif
               </div>
               <PwField
                 label="密码"
-                placeholder="4 位数字"
+                placeholder="6 位数字"
                 value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
               />
               <PwField
                 label="确认密码"
-                placeholder="再输一次 4 位数字"
+                placeholder="再输一次 6 位数字"
                 value={form.confirm}
                 onChange={e => setForm(p => ({ ...p, confirm: e.target.value }))}
               />

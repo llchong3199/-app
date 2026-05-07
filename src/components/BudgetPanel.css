@@ -11,7 +11,7 @@
 
 .budget-card {
   background: var(--surface);
-  border-radius: 14px;
+  border-radius: 20px;
   padding: 24px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
@@ -40,7 +40,7 @@
   margin-bottom: 16px;
   background: var(--cat-tag-bg);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 6px 4px;
 }
 
@@ -52,7 +52,7 @@
   cursor: pointer;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +83,7 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--gold-primary);
-  background: rgba(212,175,55,0.15);
+  background: rgba(255,107,157,0.15);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1px 7px;
@@ -138,7 +138,7 @@
   display: flex;
   align-items: stretch;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   background: var(--input-bg);
 }
@@ -173,18 +173,18 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all .3s ease;
   white-space: nowrap;
   letter-spacing: 0.3px;
 }
 
-.income-input-row button:hover { opacity: 0.88; }
+.income-input-row button:hover { opacity: 0.88; transform: scale(1.02); }
 
 /* ── Income summary ── */
 
 .income-summary {
   background: var(--cat-tag-bg);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 14px 16px;
   border: 1px solid var(--border);
 }
@@ -273,8 +273,28 @@
 .budget-item-header {
   display: flex;
   align-items: center;
+  gap: 8px;
   justify-content: space-between;
   margin-bottom: 6px;
+}
+
+.budget-reset-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 4px 9px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.budget-reset-btn:hover {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+  background: rgba(255, 34, 67, 0.06);
 }
 
 .budget-cat-name {
@@ -288,7 +308,7 @@
   display: flex;
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--input-bg);
   max-width: 130px;
@@ -350,7 +370,7 @@
   padding: 12px 14px;
   background: var(--input-bg);
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: 12px;
 }
 
 .allocation-row {
@@ -387,9 +407,9 @@
 /* ── Remain banner ── */
 
 .budget-remain-banner {
-  background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(240,201,104,0.08));
+  background: linear-gradient(135deg, rgba(255,107,157,0.12), rgba(255,139,191,0.08));
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 9px 14px;
   font-size: 13px;
   color: var(--text-2);

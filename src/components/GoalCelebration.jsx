@@ -2,39 +2,59 @@ import { useEffect, useState, useMemo } from 'react'
 import './GoalCelebration.css'
 
 const CONFETTI_COLORS = [
-  '#D4AF37','#F0C968','#ef4444','#22c55e',
-  '#3b82f6','#ec4899','#f97316','#a855f7','#FFB7C5',
+  '#FF6B9D','#FFB7D1','#FF8BBF','#FF80AB',
+  '#F06292','#56CCF2','#6FCF97','#F2C94C','#9B51E0','#FF8C42',
 ]
 
-function PigSVG() {
+function HelloKittySVG() {
   return (
-    <svg viewBox="0 0 120 112" className="celeb-pig-svg" aria-hidden="true">
-      <ellipse cx="60" cy="80" rx="43" ry="28" fill="#FFB7C5"/>
-      <circle  cx="60" cy="44" r="32"  fill="#FFB7C5"/>
-      <ellipse cx="33" cy="19" rx="12" ry="14" fill="#FFB7C5"/>
-      <ellipse cx="33" cy="19" rx="7"  ry="9"  fill="#FF8FA3"/>
-      <ellipse cx="87" cy="19" rx="12" ry="14" fill="#FFB7C5"/>
-      <ellipse cx="87" cy="19" rx="7"  ry="9"  fill="#FF8FA3"/>
-      <circle  cx="47" cy="37" r="6.5" fill="white"/>
-      <circle  cx="73" cy="37" r="6.5" fill="white"/>
-      <circle  cx="48.5" cy="38" r="3.8" fill="#1a1a1a"/>
-      <circle  cx="74.5" cy="38" r="3.8" fill="#1a1a1a"/>
-      <circle  cx="49.5" cy="37" r="1.4" fill="white"/>
-      <circle  cx="75.5" cy="37" r="1.4" fill="white"/>
-      <ellipse cx="60" cy="54" rx="12" ry="8"  fill="#FF8FA3"/>
-      <circle  cx="55" cy="54" r="2.6" fill="#C0607A"/>
-      <circle  cx="65" cy="54" r="2.6" fill="#C0607A"/>
-      {/* big happy smile */}
-      <path d="M46,60 Q60,72 74,60" fill="none" stroke="#C0607A" strokeWidth="2.8" strokeLinecap="round"/>
-      {/* rosy cheeks */}
-      <ellipse cx="38" cy="50" rx="7" ry="4" fill="#FF8FA3" opacity="0.5"/>
-      <ellipse cx="82" cy="50" rx="7" ry="4" fill="#FF8FA3" opacity="0.5"/>
-      <rect x="54" y="13" width="12" height="4.5" rx="2.2" fill="#D4AF37" stroke="#B8960C" strokeWidth="0.6"/>
-      <ellipse cx="36"  cy="101" rx="11" ry="7" fill="#FFB7C5"/>
-      <ellipse cx="54"  cy="103" rx="11" ry="7" fill="#FFB7C5"/>
-      <ellipse cx="72"  cy="103" rx="11" ry="7" fill="#FFB7C5"/>
-      <ellipse cx="90"  cy="101" rx="11" ry="7" fill="#FFB7C5"/>
-      <path d="M103,75 C114,68 114,55 105,51" fill="none" stroke="#FFB7C5" strokeWidth="5.5" strokeLinecap="round"/>
+    <svg viewBox="0 0 120 120" className="celeb-kitty-svg" aria-hidden="true">
+      {/* body */}
+      <ellipse cx="60" cy="100" rx="28" ry="18" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* head */}
+      <circle cx="60" cy="54" r="31" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* left ear outer */}
+      <polygon points="28,28 23,8 44,22" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* left ear inner */}
+      <polygon points="30,25 26,13 42,22" fill="#FFCCE0"/>
+      {/* right ear outer */}
+      <polygon points="92,28 97,8 76,22" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* right ear inner */}
+      <polygon points="90,25 94,13 78,22" fill="#FFCCE0"/>
+      {/* bow left petal */}
+      <path d="M90,12 C86,5 77,6 79,12 C81,18 90,12 Z" fill="#FF6B9D"/>
+      {/* bow right petal */}
+      <path d="M98,12 C102,5 111,6 109,12 C107,18 98,12 Z" fill="#FF6B9D"/>
+      {/* bow center */}
+      <circle cx="94" cy="12" r="4.5" fill="#FFB7D1"/>
+      {/* eyes */}
+      <ellipse cx="47" cy="52" rx="4" ry="4.5" fill="#1a1a1a"/>
+      <ellipse cx="73" cy="52" rx="4" ry="4.5" fill="#1a1a1a"/>
+      {/* eye shine */}
+      <circle cx="49" cy="50" r="1.5" fill="white"/>
+      <circle cx="75" cy="50" r="1.5" fill="white"/>
+      {/* nose */}
+      <ellipse cx="60" cy="60" rx="2.2" ry="1.6" fill="#FFDA6E"/>
+      {/* whiskers left */}
+      <line x1="54" y1="57" x2="34" y2="53" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="54" y1="62" x2="34" y2="63" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      {/* whiskers right */}
+      <line x1="66" y1="57" x2="86" y2="53" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="66" y1="62" x2="86" y2="63" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      {/* chest bow left petal */}
+      <path d="M55,88 C52,83 45,84 47,88 C49,92 55,88 Z" fill="#FF6B9D" opacity="0.75"/>
+      {/* chest bow right petal */}
+      <path d="M65,88 C68,83 75,84 73,88 C71,92 65,88 Z" fill="#FF6B9D" opacity="0.75"/>
+      {/* chest bow center */}
+      <circle cx="60" cy="88" r="3" fill="#FFB7D1"/>
+      {/* left arm (raised for dancing) */}
+      <ellipse cx="31" cy="82" rx="9" ry="6" fill="white" stroke="#FFD0E8" strokeWidth="1.5" transform="rotate(-50 31 82)"/>
+      {/* right arm (raised for dancing) */}
+      <ellipse cx="89" cy="82" rx="9" ry="6" fill="white" stroke="#FFD0E8" strokeWidth="1.5" transform="rotate(50 89 82)"/>
+      {/* left leg */}
+      <ellipse cx="47" cy="114" rx="11" ry="7" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* right leg */}
+      <ellipse cx="73" cy="114" rx="11" ry="7" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
     </svg>
   )
 }
@@ -88,17 +108,17 @@ export function GoalCelebration({ goal, onClose }) {
 
         {/* floating stars orbit */}
         <div className="celeb-orbit">
-          {['✨','🌟','💫','⭐','✨','🌟'].map((s, i) => (
+          {['🎀','🌸','💕','✨','🎀','💫'].map((s, i) => (
             <span key={i} className="celeb-star" style={{ '--i': i, '--total': 6 }}>{s}</span>
           ))}
         </div>
 
-        {/* dancing pig */}
-        <div className="celeb-pig-wrap">
-          <PigSVG />
+        {/* dancing kitty */}
+        <div className="celeb-kitty-wrap">
+          <HelloKittySVG />
         </div>
 
-        <div className="celeb-fireworks">🎊 🎉 🎊</div>
+        <div className="celeb-fireworks">🎀 ✨ 💕</div>
         <h2 className="celeb-title">恭喜达成目标！</h2>
 
         <div className="celeb-goal-badge">
@@ -108,10 +128,10 @@ export function GoalCelebration({ goal, onClose }) {
 
         <div className="celeb-amount">¥{goal.targetAmount.toLocaleString()}</div>
 
-        <p className="celeb-quote">呼噜呼噜～ 你真的太棒啦！🐷</p>
+        <p className="celeb-quote">喵喵～ 你真的太棒啦！🎀</p>
 
         <button className="celeb-close-btn" onClick={handleClose}>
-          太棒了！✨
+          喵喵太棒了！🎀
         </button>
       </div>
     </div>

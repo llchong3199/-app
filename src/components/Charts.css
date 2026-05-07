@@ -13,7 +13,7 @@
 
 .chart-card {
   background: var(--surface);
-  border-radius: 14px;
+  border-radius: 20px;
   padding: 24px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
@@ -64,6 +64,26 @@
 .chart-back-btn:hover {
   border-color: var(--gold-primary);
   color: var(--gold-primary);
+}
+
+.chart-pdf-btn {
+  margin-left: auto;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.chart-pdf-btn:hover {
+  box-shadow: 0 4px 12px rgba(255,107,157,0.35);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 700px) {

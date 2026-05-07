@@ -1,34 +1,73 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" width="360" height="220">
 
-  <!-- 祥云 A：左上，大 -->
-  <g transform="translate(18, 14)" fill="none" stroke="#D4AF37" stroke-width="1.4" opacity="0.10">
-    <!-- 主云体：3 个鼓包 -->
-    <path d="M6,42 C3,34 5,26 13,24 C11,14 19,8 28,10 C29,2 40,0 47,6 C53,0 64,2 66,10 C74,8 82,14 82,24 C88,27 90,38 85,43 C83,50 74,51 70,47 L20,47 C16,51 7,50 5,45 Z"/>
-    <!-- 左侧内卷 -->
-    <path d="M9,44 C5,40 7,33 12,31 C17,29 21,33 19,38 C17,42 11,44 9,44 Z"/>
-    <!-- 右侧内卷 -->
-    <path d="M84,42 C88,38 86,31 81,29 C76,27 72,31 74,36 C76,40 82,43 84,42 Z"/>
+  <!-- Bow 1: upper-left -->
+  <g transform="translate(45,32)" fill="#FF6B9D" opacity="0.17">
+    <path d="M-15,-9 C-15,-9 -3,-3 0,0 C-3,3 -15,9 -15,9 Z"/>
+    <path d="M15,-9 C15,-9 3,-3 0,0 C3,3 15,9 15,9 Z"/>
+    <ellipse cx="0" cy="0" rx="4" ry="3.2" fill="#FFB7D1"/>
   </g>
 
-  <!-- 祥云 B：右下，小、镜像 -->
-  <g transform="translate(310, 162) scale(-0.72, 0.72)" fill="none" stroke="#D4AF37" stroke-width="1.6" opacity="0.07">
-    <path d="M6,42 C3,34 5,26 13,24 C11,14 19,8 28,10 C29,2 40,0 47,6 C53,0 64,2 66,10 C74,8 82,14 82,24 C88,27 90,38 85,43 C83,50 74,51 70,47 L20,47 C16,51 7,50 5,45 Z"/>
-    <path d="M9,44 C5,40 7,33 12,31 C17,29 21,33 19,38 C17,42 11,44 9,44 Z"/>
-    <path d="M84,42 C88,38 86,31 81,29 C76,27 72,31 74,36 C76,40 82,43 84,42 Z"/>
+  <!-- Bow 2: bottom-right -->
+  <g transform="translate(318,178)" fill="#FFB7D1" opacity="0.18">
+    <path d="M-13,-8 C-13,-8 -3,-3 0,0 C-3,3 -13,8 -13,8 Z"/>
+    <path d="M13,-8 C13,-8 3,-3 0,0 C3,3 13,8 13,8 Z"/>
+    <ellipse cx="0" cy="0" rx="3.5" ry="2.8" fill="#FF6B9D"/>
   </g>
 
-  <!-- 祥云 C：右上角，最小，点缀 -->
-  <g transform="translate(232, 8) scale(0.55)" fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.06">
-    <path d="M6,42 C3,34 5,26 13,24 C11,14 19,8 28,10 C29,2 40,0 47,6 C53,0 64,2 66,10 C74,8 82,14 82,24 C88,27 90,38 85,43 C83,50 74,51 70,47 L20,47 C16,51 7,50 5,45 Z"/>
-    <path d="M9,44 C5,40 7,33 12,31 C17,29 21,33 19,38 C17,42 11,44 9,44 Z"/>
-    <path d="M84,42 C88,38 86,31 81,29 C76,27 72,31 74,36 C76,40 82,43 84,42 Z"/>
+  <!-- Bow 3: middle-left (small) -->
+  <g transform="translate(108,122)" fill="#FF6B9D" opacity="0.13">
+    <path d="M-10,-6 C-10,-6 -2,-2 0,0 C-2,2 -10,6 -10,6 Z"/>
+    <path d="M10,-6 C10,-6 2,-2 0,0 C2,2 10,6 10,6 Z"/>
+    <ellipse cx="0" cy="0" rx="2.8" ry="2.2" fill="#FFB7D1"/>
   </g>
 
-  <!-- 祥云 D：左下角，小 -->
-  <g transform="translate(10, 142) scale(0.60)" fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.06">
-    <path d="M6,42 C3,34 5,26 13,24 C11,14 19,8 28,10 C29,2 40,0 47,6 C53,0 64,2 66,10 C74,8 82,14 82,24 C88,27 90,38 85,43 C83,50 74,51 70,47 L20,47 C16,51 7,50 5,45 Z"/>
-    <path d="M9,44 C5,40 7,33 12,31 C17,29 21,33 19,38 C17,42 11,44 9,44 Z"/>
-    <path d="M84,42 C88,38 86,31 81,29 C76,27 72,31 74,36 C76,40 82,43 84,42 Z"/>
+  <!-- Heart 1: upper-right -->
+  <path transform="translate(272,24)" d="M0,7 C0,7 -11,-2 -11,-8 C-11,-12 -8,-15 -5,-15 C-2,-15 0,-13 0,-11 C0,-13 2,-15 5,-15 C8,-15 11,-12 11,-8 C11,-2 0,7 0,7 Z" fill="#FFB7D1" opacity="0.16"/>
+
+  <!-- Heart 2: lower-left -->
+  <path transform="translate(58,170)" d="M0,6 C0,6 -9,-1 -9,-6 C-9,-9 -6,-12 -3,-12 C-1,-12 0,-10 0,-9 C0,-10 1,-12 3,-12 C6,-12 9,-9 9,-6 C9,-1 0,6 0,6 Z" fill="#FF6B9D" opacity="0.14"/>
+
+  <!-- Heart 3: center-right (tiny) -->
+  <path transform="translate(290,110)" d="M0,4 C0,4 -6,-1 -6,-4 C-6,-6 -4,-8 -2,-8 C-1,-8 0,-7 0,-6 C0,-7 1,-8 2,-8 C4,-8 6,-6 6,-4 C6,-1 0,4 0,4 Z" fill="#FFB7D1" opacity="0.15"/>
+
+  <!-- Sparkle 1: top-center -->
+  <g transform="translate(180,16)" stroke="#FF6B9D" stroke-linecap="round" opacity="0.16">
+    <line x1="0" y1="-9" x2="0" y2="9" stroke-width="1.6"/>
+    <line x1="-9" y1="0" x2="9" y2="0" stroke-width="1.6"/>
+    <line x1="-6.4" y1="-6.4" x2="6.4" y2="6.4" stroke-width="1"/>
+    <line x1="6.4" y1="-6.4" x2="-6.4" y2="6.4" stroke-width="1"/>
   </g>
+
+  <!-- Sparkle 2: lower-center -->
+  <g transform="translate(195,148)" stroke="#FFB7D1" stroke-linecap="round" opacity="0.18">
+    <line x1="0" y1="-7" x2="0" y2="7" stroke-width="1.5"/>
+    <line x1="-7" y1="0" x2="7" y2="0" stroke-width="1.5"/>
+    <line x1="-5" y1="-5" x2="5" y2="5" stroke-width="0.9"/>
+    <line x1="5" y1="-5" x2="-5" y2="5" stroke-width="0.9"/>
+  </g>
+
+  <!-- Sparkle 3: right side (mini) -->
+  <g transform="translate(340,80)" stroke="#FF6B9D" stroke-linecap="round" opacity="0.14">
+    <line x1="0" y1="-5.5" x2="0" y2="5.5" stroke-width="1.2"/>
+    <line x1="-5.5" y1="0" x2="5.5" y2="0" stroke-width="1.2"/>
+  </g>
+
+  <!-- 5-point star: upper area -->
+  <polygon transform="translate(135,45)" points="0,-7 1.8,-2 7,-2 3,1.8 4.8,7 0,4 -4.8,7 -3,1.8 -7,-2 -1.8,-2" fill="#FFB7D1" opacity="0.15"/>
+
+  <!-- 5-point star: lower right -->
+  <polygon transform="translate(240,185)" points="0,-6 1.5,-1.8 6,-1.8 2.5,1.5 4,6 0,3.5 -4,6 -2.5,1.5 -6,-1.8 -1.5,-1.8" fill="#FF6B9D" opacity="0.13"/>
+
+  <!-- Dots scattered -->
+  <circle cx="165" cy="55"  r="3.2" fill="#FF6B9D" opacity="0.14"/>
+  <circle cx="245" cy="95"  r="2.5" fill="#FFB7D1" opacity="0.18"/>
+  <circle cx="82"  cy="88"  r="2.2" fill="#FFB7D1" opacity="0.15"/>
+  <circle cx="308" cy="54"  r="1.8" fill="#FF6B9D" opacity="0.13"/>
+  <circle cx="20"  cy="105" r="2.4" fill="#FF6B9D" opacity="0.15"/>
+  <circle cx="355" cy="135" r="1.6" fill="#FFB7D1" opacity="0.14"/>
+  <circle cx="178" cy="195" r="2.8" fill="#FF6B9D" opacity="0.13"/>
+  <circle cx="260" cy="62"  r="1.5" fill="#FFB7D1" opacity="0.16"/>
+  <circle cx="128" cy="165" r="2"   fill="#FFB7D1" opacity="0.13"/>
+  <circle cx="330" cy="152" r="2.6" fill="#FF6B9D" opacity="0.12"/>
 
 </svg>

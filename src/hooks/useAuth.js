@@ -85,10 +85,32 @@ export function useAuth() {
     deleteAccountById(userId)
   }
 
+  function updateUsername(userId, newUsername) {
+    const all = loadUsers()
+    if (all.find(u => u.username === newUsername && u.id !== userId)) {
+      throw new Error('用户名已被使用')
+    }
+    const updated = all.map(u => u.id === userId ? { ...u, username: newUsername } : u)
+    saveUsers(updated)
+    setUsers(updated)
+    if (currentUser?.id === userId) {
+      setCurrentUser(prev => ({ ...prev, username: newUsername }))
+    }
+  }
+
+  async function updatePassword(userId, currentPassword, newPassword) {
+    await verifyPassword(userId, currentPassword)
+    const passwordHash = await hashPassword(newPassword)
+    const all = loadUsers()
+    const updated = all.map(u => u.id === userId ? { ...u, passwordHash } : u)
+    saveUsers(updated)
+    setUsers(updated)
+  }
+
   function logout() {
     sessionStorage.removeItem(SESSION_KEY)
     setCurrentUser(null)
   }
 
-  return { users, currentUser, login, register, updateUserAvatar, verifyPassword, deleteAccountById, deleteAccount, logout }
+  return { users, currentUser, login, register, updateUserAvatar, updateUsername, updatePassword, verifyPassword, deleteAccountById, deleteAccount, logout }
 }

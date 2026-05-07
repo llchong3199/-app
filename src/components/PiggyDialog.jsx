@@ -1,41 +1,55 @@
 import { useEffect, useState } from 'react'
 import './PiggyDialog.css'
 
-function PigSVG() {
+function HelloKittySVG() {
   return (
-    <svg viewBox="0 0 120 112" className="pig-svg" aria-hidden="true">
+    <svg viewBox="0 0 120 120" className="kitty-svg" aria-hidden="true">
       {/* body */}
-      <ellipse cx="60" cy="80" rx="43" ry="28" fill="#FFB7C5"/>
+      <ellipse cx="60" cy="100" rx="28" ry="18" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
       {/* head */}
-      <circle cx="60" cy="44" r="32" fill="#FFB7C5"/>
-      {/* left ear */}
-      <ellipse cx="33" cy="19" rx="12" ry="14" fill="#FFB7C5"/>
-      <ellipse cx="33" cy="19" rx="7"  ry="9"  fill="#FF8FA3"/>
-      {/* right ear */}
-      <ellipse cx="87" cy="19" rx="12" ry="14" fill="#FFB7C5"/>
-      <ellipse cx="87" cy="19" rx="7"  ry="9"  fill="#FF8FA3"/>
+      <circle cx="60" cy="54" r="31" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* left ear outer */}
+      <polygon points="28,28 23,8 44,22" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* left ear inner */}
+      <polygon points="30,25 26,13 42,22" fill="#FFCCE0"/>
+      {/* right ear outer */}
+      <polygon points="92,28 97,8 76,22" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* right ear inner */}
+      <polygon points="90,25 94,13 78,22" fill="#FFCCE0"/>
+      {/* bow left petal */}
+      <path d="M90,12 C86,5 77,6 79,12 C81,18 90,12 Z" fill="#FF6B9D"/>
+      {/* bow right petal */}
+      <path d="M98,12 C102,5 111,6 109,12 C107,18 98,12 Z" fill="#FF6B9D"/>
+      {/* bow center */}
+      <circle cx="94" cy="12" r="4.5" fill="#FFB7D1"/>
       {/* eyes */}
-      <circle cx="47" cy="37" r="6.5" fill="white"/>
-      <circle cx="73" cy="37" r="6.5" fill="white"/>
-      <circle cx="48.5" cy="38" r="3.8" fill="#1a1a1a"/>
-      <circle cx="74.5" cy="38" r="3.8" fill="#1a1a1a"/>
-      <circle cx="49.5" cy="37" r="1.4" fill="white"/>
-      <circle cx="75.5" cy="37" r="1.4" fill="white"/>
-      {/* snout */}
-      <ellipse cx="60" cy="54" rx="12" ry="8" fill="#FF8FA3"/>
-      <circle cx="55" cy="54" r="2.6" fill="#C0607A"/>
-      <circle cx="65" cy="54" r="2.6" fill="#C0607A"/>
-      {/* smile */}
-      <path d="M50,62 Q60,69 70,62" fill="none" stroke="#C0607A" strokeWidth="2.2" strokeLinecap="round"/>
-      {/* coin slot (gold) */}
-      <rect x="54" y="13" width="12" height="4.5" rx="2.2" fill="#D4AF37" stroke="#B8960C" strokeWidth="0.6"/>
-      {/* legs */}
-      <ellipse cx="36"  cy="101" rx="11" ry="7" fill="#FFB7C5"/>
-      <ellipse cx="54"  cy="103" rx="11" ry="7" fill="#FFB7C5"/>
-      <ellipse cx="72"  cy="103" rx="11" ry="7" fill="#FFB7C5"/>
-      <ellipse cx="90"  cy="101" rx="11" ry="7" fill="#FFB7C5"/>
-      {/* tail curl */}
-      <path d="M103,75 C114,68 114,55 105,51" fill="none" stroke="#FFB7C5" strokeWidth="5.5" strokeLinecap="round"/>
+      <ellipse cx="47" cy="52" rx="4" ry="4.5" fill="#1a1a1a"/>
+      <ellipse cx="73" cy="52" rx="4" ry="4.5" fill="#1a1a1a"/>
+      {/* eye shine */}
+      <circle cx="49" cy="50" r="1.5" fill="white"/>
+      <circle cx="75" cy="50" r="1.5" fill="white"/>
+      {/* nose */}
+      <ellipse cx="60" cy="60" rx="2.2" ry="1.6" fill="#FFDA6E"/>
+      {/* whiskers left */}
+      <line x1="54" y1="57" x2="34" y2="53" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="54" y1="62" x2="34" y2="63" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      {/* whiskers right */}
+      <line x1="66" y1="57" x2="86" y2="53" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="66" y1="62" x2="86" y2="63" stroke="#D4B0C0" strokeWidth="1.2" strokeLinecap="round"/>
+      {/* chest bow left petal */}
+      <path d="M55,88 C52,83 45,84 47,88 C49,92 55,88 Z" fill="#FF6B9D" opacity="0.75"/>
+      {/* chest bow right petal */}
+      <path d="M65,88 C68,83 75,84 73,88 C71,92 65,88 Z" fill="#FF6B9D" opacity="0.75"/>
+      {/* chest bow center */}
+      <circle cx="60" cy="88" r="3" fill="#FFB7D1"/>
+      {/* left arm */}
+      <ellipse cx="33" cy="88" rx="9" ry="6" fill="white" stroke="#FFD0E8" strokeWidth="1.5" transform="rotate(-20 33 88)"/>
+      {/* right arm */}
+      <ellipse cx="87" cy="88" rx="9" ry="6" fill="white" stroke="#FFD0E8" strokeWidth="1.5" transform="rotate(20 87 88)"/>
+      {/* left leg */}
+      <ellipse cx="47" cy="114" rx="11" ry="7" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
+      {/* right leg */}
+      <ellipse cx="73" cy="114" rx="11" ry="7" fill="white" stroke="#FFD0E8" strokeWidth="1.5"/>
     </svg>
   )
 }
@@ -62,14 +76,14 @@ export function PiggyDialog({ income, onGoToSavings, onClose }) {
     <div className={`piggy-overlay${visible ? ' visible' : ''}`} onClick={dismiss}>
       <div className={`piggy-dialog${visible ? ' visible' : ''}`} onClick={e => e.stopPropagation()}>
         <div className="piggy-body">
-          <div className="pig-wrap">
-            <PigSVG />
+          <div className="kitty-wrap">
+            <HelloKittySVG />
           </div>
           <div className="piggy-bubble">
             <p className="piggy-greeting">
-              呼噜呼噜～ 工资&nbsp;<strong>¥{income.toLocaleString()}</strong>&nbsp;到手啦！
+              喵～ 工资&nbsp;<strong>¥{income.toLocaleString()}</strong>&nbsp;到手啦！
             </p>
-            <p className="piggy-sub">快来喂我，把钱存进来吧 🪙</p>
+            <p className="piggy-sub">快来存钱，一起攒梦想吧 🎀</p>
             <div className="piggy-rates">
               <div className="piggy-rate-chip">
                 <span>存 20%</span>
@@ -83,7 +97,7 @@ export function PiggyDialog({ income, onGoToSavings, onClose }) {
           </div>
         </div>
         <div className="piggy-actions">
-          <button className="piggy-btn-go" onClick={goSavings}>🐷 去设储蓄目标</button>
+          <button className="piggy-btn-go" onClick={goSavings}>🎀 去设储蓄目标</button>
           <button className="piggy-btn-dismiss" onClick={dismiss}>先不了</button>
         </div>
       </div>

@@ -15,7 +15,7 @@
 
 .piggy-dialog {
   background: var(--surface);
-  border-radius: 24px;
+  border-radius: 28px;
   padding: 30px 28px 22px;
   width: 440px;
   max-width: 92vw;
@@ -40,18 +40,18 @@
   margin-bottom: 22px;
 }
 
-.pig-wrap { flex-shrink: 0; }
+.kitty-wrap { flex-shrink: 0; }
 
-@keyframes pigBounce {
+@keyframes kittyBounce {
   0%,100% { transform: translateY(0) rotate(-3deg); }
   50%      { transform: translateY(-10px) rotate(3deg); }
 }
 
-.pig-svg {
+.kitty-svg {
   width: 110px;
-  height: 100px;
-  animation: pigBounce 1.9s ease-in-out infinite;
-  filter: drop-shadow(0 6px 12px rgba(255,140,170,0.35));
+  height: 110px;
+  animation: kittyBounce 1.9s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(255,107,157,0.35));
 }
 
 /* Speech bubble pointing left */
@@ -111,7 +111,7 @@
   gap: 2px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: 12px;
   padding: 7px 10px;
 }
 
@@ -139,18 +139,18 @@
   background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
   color: var(--gold-deep);
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, box-shadow 0.2s;
-  box-shadow: 0 3px 10px rgba(212,175,55,0.35);
+  transition: all .3s ease;
+  box-shadow: 0 3px 10px rgba(255,107,157,0.30);
   letter-spacing: 0.3px;
 }
 
 .piggy-btn-go:hover {
-  opacity: 0.88;
-  box-shadow: 0 5px 16px rgba(212,175,55,0.50);
+  box-shadow: 0 5px 16px rgba(255,107,157,0.45);
+  transform: translateY(-2px);
 }
 
 .piggy-btn-dismiss {
@@ -158,11 +158,17 @@
   padding: 13px;
   background: none;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
   color: var(--text-3);
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.piggy-btn-dismiss:hover {
+  border-color: var(--text-3);
+  color: var(--text-2);
+  background: var(--cat-tag-bg);
 }
 
 .piggy-btn-dismiss:hover {

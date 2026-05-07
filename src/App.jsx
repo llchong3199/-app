@@ -12,12 +12,13 @@ import { SavingsPage } from './components/SavingsPage'
 import { PiggyDialog } from './components/PiggyDialog'
 import { MonthWheelPicker } from './components/DateWheelPicker'
 import { SuccessModal } from './components/SuccessModal'
-import { AvatarPicker, UserAvatar } from './components/AvatarPicker'
+import { UserAvatar } from './components/AvatarPicker'
+import { SettingsModal } from './components/SettingsModal'
 import './App.css'
 
 const TABS = ['记录', '图表', '预算', '储蓄', '分类']
 
-function MainApp({ user, users, onLogout, onUpdateAvatar }) {
+function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUpdatePassword }) {
   const {
     expenses, categories, addExpense, deleteExpense, editExpense, addCategory, deleteCategory,
     incomeByMonth, monthlyIncome, setIncomeForMonth, budgets, setCategoryBudget,
@@ -29,12 +30,25 @@ function MainApp({ user, users, onLogout, onUpdateAvatar }) {
   const [monthFilter, setMonthFilter] = useState(() => new Date().toISOString().slice(0, 7))
   const [showMonthPicker, setShowMonthPicker] = useState(false)
   const [successExpense, setSuccessExpense] = useState(null)
-  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [showPiggy, setShowPiggy] = useState(false)
   const [piggyIncome, setPiggyIncome] = useState(0)
   const quoteIndexRef = useRef(0)
   const closeTimerRef = useRef(null)
   const playSound = useSuccessSound()
+
+  const audioRef = useRef(null)
+
+  useEffect(() => {
+    const src = encodeURI('/神隱少女 - 生命之名.mp3')
+    const audio = new Audio(src)
+    audio.loop = true
+    audio.volume = 0.2
+    audio.preload = 'auto'
+    audio.play().catch(err => console.warn('[audio]', err))
+    audioRef.current = audio
+    return () => { audio.pause(); audio.currentTime = 0 }
+  }, [])
 
   const [leftWidth, setLeftWidth] = useState(300)
   const dragRef = useRef(null)
@@ -113,10 +127,13 @@ function MainApp({ user, users, onLogout, onUpdateAvatar }) {
           onClose={handleCloseModal}
         />
       )}
-      {showAvatarPicker && (
-        <AvatarPicker
-          onSelect={avatar => onUpdateAvatar(user.id, avatar)}
-          onClose={() => setShowAvatarPicker(false)}
+      {showSettings && (
+        <SettingsModal
+          user={user}
+          onUpdateAvatar={onUpdateAvatar}
+          onUpdateUsername={onUpdateUsername}
+          onUpdatePassword={onUpdatePassword}
+          onClose={() => setShowSettings(false)}
         />
       )}
       {showPiggy && piggyIncome > 0 && (
@@ -129,13 +146,14 @@ function MainApp({ user, users, onLogout, onUpdateAvatar }) {
 
       <header className="app-header">
         <div className="header-content">
-          <h1>消费记录</h1>
+          <span className="header-deco">🎀</span>
+          <h1>Hello 记账</h1>
           <span className="month-total">本月 ¥{monthTotal.toFixed(2)}</span>
           <div className="header-user">
             <button
               className="header-avatar-btn"
-              onClick={() => setShowAvatarPicker(true)}
-              title="更换头像"
+              onClick={() => setShowSettings(true)}
+              title="设置"
             >
               <UserAvatar avatar={freshAvatar} size={28} />
             </button>
@@ -234,7 +252,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar }) {
 }
 
 export default function App() {
-  const { users, currentUser, login, register, updateUserAvatar, verifyPassword, deleteAccountById, logout } = useAuth()
+  const { users, currentUser, login, register, updateUserAvatar, updateUsername, updatePassword, verifyPassword, deleteAccountById, logout } = useAuth()
 
   if (!currentUser) {
     return (
@@ -255,6 +273,8 @@ export default function App() {
       users={users}
       onLogout={logout}
       onUpdateAvatar={updateUserAvatar}
+      onUpdateUsername={updateUsername}
+      onUpdatePassword={updatePassword}
     />
   )
 }

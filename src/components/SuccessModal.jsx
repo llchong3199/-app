@@ -27,6 +27,8 @@ export function SuccessModal({ expense, quoteIndex, onClose }) {
           <span className="modal-icon">{icon}</span>
         </div>
 
+        <div className="modal-kitty-tag">🎀</div>
+
         <div className="modal-check" style={{ color }}>✓ 记录成功</div>
 
         <div className="modal-category" style={{ color }}>{expense.category}</div>
@@ -48,7 +50,7 @@ export function SuccessModal({ expense, quoteIndex, onClose }) {
         <div className="modal-divider" />
 
         <div className="modal-quote">
-          <span className="modal-quote-icon">💡</span>
+          <span className="modal-quote-icon">🎀</span>
           <span>"{quote}"</span>
         </div>
 

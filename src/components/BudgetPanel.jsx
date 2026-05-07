@@ -52,7 +52,10 @@ export function BudgetPanel({ expenses, categories, incomeByMonth, budgets, onSe
   const balance = monthlyIncome > 0 ? monthlyIncome - totalSpent : null
   const incomeUsedPct = monthlyIncome > 0 ? Math.min(100, (totalSpent / monthlyIncome) * 100) : 0
 
-  const totalBudgeted = categories.reduce((s, c) => s + (budgets[c] ?? 0), 0)
+  const totalBudgeted = categories.reduce((s, c) => {
+    const live = parseFloat(budgetInputs[c])
+    return s + (isNaN(live) || live < 0 ? (budgets[c] ?? 0) : live)
+  }, 0)
   const remainingToAllocate = monthlyIncome > 0 ? monthlyIncome - totalBudgeted : null
 
   const isCurrentMonth = selectedMonth === currentMonth
@@ -68,6 +71,11 @@ export function BudgetPanel({ expenses, categories, incomeByMonth, budgets, onSe
   function handleBudgetBlur(cat) {
     const v = parseFloat(budgetInputs[cat])
     onSetBudget(cat, isNaN(v) || v < 0 ? 0 : v)
+  }
+
+  function handleBudgetReset(cat) {
+    setBudgetInputs(prev => ({ ...prev, [cat]: '' }))
+    onSetBudget(cat, 0)
   }
 
   return (
@@ -194,12 +202,7 @@ export function BudgetPanel({ expenses, categories, incomeByMonth, budgets, onSe
             const budget = budgets[cat] ?? 0
             const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0
             const over = budget > 0 && spent > budget
-            const color = getCategoryColor(cat) || '#D4AF37'
-
-            const inputVal = parseFloat(budgetInputs[cat])
-            const inputDiff = monthlyIncome > 0 && !isNaN(inputVal) && inputVal !== budget
-              ? remainingToAllocate + budget - inputVal
-              : null
+            const color = getCategoryColor(cat) || '#FF6B9D'
 
             return (
               <div key={cat} className="budget-item">
@@ -217,15 +220,15 @@ export function BudgetPanel({ expenses, categories, incomeByMonth, budgets, onSe
                       onBlur={() => handleBudgetBlur(cat)}
                     />
                   </div>
+                  {(budget > 0 || budgetInputs[cat]) && (
+                    <button
+                      type="button"
+                      className="budget-reset-btn"
+                      onClick={() => handleBudgetReset(cat)}
+                      title="重置预算"
+                    >重置</button>
+                  )}
                 </div>
-
-                {inputDiff !== null && (
-                  <div className={`budget-input-hint${inputDiff < 0 ? ' over' : ''}`}>
-                    {inputDiff < 0
-                      ? `⚠ 设置后超出收入 ¥${Math.abs(inputDiff).toFixed(2)}`
-                      : `设置后还可分配 ¥${inputDiff.toFixed(2)}`}
-                  </div>
-                )}
 
                 {budget > 0 && (
                   <>

@@ -10,7 +10,7 @@
 
 .ap-panel {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: 22px;
   width: 320px;
   padding: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.3);
@@ -56,7 +56,7 @@
 .ap-emoji-btn {
   background: none;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 20px;
   padding: 7px 2px;
   cursor: pointer;
@@ -66,7 +66,7 @@
 
 .ap-emoji-btn:hover {
   background: var(--input-bg);
-  border-color: #6366f1;
+  border-color: #FF6B9D;
   transform: scale(1.15);
 }
 
@@ -81,7 +81,7 @@
   padding: 10px;
   background: var(--input-bg);
   border: 1px dashed var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   color: var(--text-2);
   cursor: pointer;
@@ -89,8 +89,8 @@
 }
 
 .ap-upload-btn:hover {
-  border-color: #6366f1;
-  color: #6366f1;
+  border-color: #FF6B9D;
+  color: #FF6B9D;
 }
 
 /* ── Circular crop tool ── */
@@ -107,7 +107,7 @@
 
 .crop-panel {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: 22px;
   padding: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.4);
   animation: apIn 0.2s ease-out;
@@ -154,29 +154,29 @@
   padding: 10px;
   background: var(--input-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   color: var(--text-2);
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.crop-cancel-btn:hover { border-color: var(--text); }
+.crop-cancel-btn:hover { border-color: var(--text); background: var(--cat-tag-bg); }
 
 .crop-confirm-btn {
   flex: 2;
   padding: 10px;
-  background: #6366f1;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: white;
+  color: var(--gold-deep);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all .3s ease;
 }
 
-.crop-confirm-btn:hover { background: #4f46e5; }
+.crop-confirm-btn:hover { background: #D4316B; transform: translateY(-1px); }
 
 /* ── Avatar display helpers ── */
 

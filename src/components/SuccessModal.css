@@ -14,6 +14,7 @@
 }
 
 .success-modal {
+  position: relative;
   background: var(--surface);
   border-radius: 20px;
   padding: 36px 32px 28px;
@@ -113,7 +114,22 @@
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
-  box-shadow: 0 2px 8px rgba(212,175,55,0.30);
+  box-shadow: 0 2px 8px rgba(255,107,157,0.25);
 }
 
 .modal-close-btn:hover { opacity: 0.88; }
+
+/* ── Hello Kitty accent ── */
+.modal-kitty-tag {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 20px;
+  animation: kittyTagWiggle 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(255,107,157,0.3));
+}
+
+@keyframes kittyTagWiggle {
+  0%,100% { transform: rotate(-10deg); }
+  50%     { transform: rotate(10deg); }
+}

@@ -4,13 +4,11 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList,
 } from 'recharts'
 import { getCategoryIcon, getCategoryColor } from '../constants/categories'
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable'
 import './Charts.css'
 
-const FALLBACK_COLORS = ['#D4AF37','#f97316','#3b82f6','#ec4899','#a855f7','#ef4444','#14b8a6','#10b981','#6b7280','#F0C968']
-
-function useDarkMode() {
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches
-}
+const FALLBACK_COLORS = ['#FF6B9D','#56CCF2','#6FCF97','#F2C94C','#9B51E0','#FF8C42','#EB5757','#2D9CDB','#F2994A','#27AE60']
 
 function buildPieData(expenses) {
   const map = {}
@@ -50,12 +48,9 @@ function buildDailyData(expenses, monthKey) {
 
 export function Charts({ expenses }) {
   const [drillMonth, setDrillMonth] = useState(null)
-  const dark = useDarkMode()
-  const tickColor = dark ? '#F0C968' : '#7A5A2A'
-  const gridColor = dark ? 'rgba(212,175,55,0.12)' : 'rgba(212,175,55,0.20)'
-  const tooltipStyle = dark
-    ? { backgroundColor: '#221C0A', border: '1px solid rgba(212,175,55,0.3)', color: '#FFF7E1', borderRadius: '8px' }
-    : { backgroundColor: '#FFFCF2', border: '1px solid rgba(212,175,55,0.3)', color: '#3D2B0A', borderRadius: '8px' }
+  const tickColor  = '#A0407A'
+  const gridColor  = 'rgba(255,107,157,0.12)'
+  const tooltipStyle = { backgroundColor: '#FFFFFF', border: '1px solid rgba(255,107,157,0.30)', color: '#2D1420', borderRadius: '8px' }
 
   if (expenses.length === 0) {
     return <div className="charts-empty">添加消费记录后，图表将显示在这里</div>
@@ -72,6 +67,85 @@ export function Charts({ expenses }) {
     if (data?.activePayload?.length) {
       setDrillMonth(data.activePayload[0].payload.monthKey)
     }
+  }
+
+  function exportPDF() {
+    if (!drillMonth) return
+    const [y, m] = drillMonth.split('-').map(Number)
+    const monthExpenses = expenses
+      .filter(e => e.date.startsWith(drillMonth))
+      .sort((a, b) => a.date.localeCompare(b.date))
+    const monthTotal = monthExpenses.reduce((s, e) => s + e.amount, 0)
+
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    const pageW = 210
+
+    // Header
+    doc.setFontSize(20)
+    doc.setTextColor(192, 48, 106)
+    doc.text(`${y}年${m}月 消费报表`, pageW / 2, 20, { align: 'center' })
+
+    doc.setFontSize(12)
+    doc.setTextColor(100, 100, 100)
+    doc.text(`总支出：¥${monthTotal.toFixed(2)}`, pageW / 2, 30, { align: 'center' })
+
+    // Expense table
+    const body = monthExpenses.map(e => {
+      const [ey, em, ed] = e.date.split('-')
+      return [`${em}月${ed}日`, e.category, `¥${e.amount.toFixed(2)}`, e.note || '-']
+    })
+
+    doc.autoTable({
+      startY: 38,
+      head: [['日期', '分类', '金额', '备注']],
+      body,
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: {
+        fillColor: [255, 107, 157],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: { fillColor: [255, 245, 248] },
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 35 },
+        2: { cellWidth: 30, halign: 'right' },
+        3: { cellWidth: 'auto' },
+      },
+      margin: { left: 14, right: 14 },
+    })
+
+    const lastTable = doc.lastAutoTable
+
+    // Category summary
+    const catMap = {}
+    for (const e of monthExpenses) {
+      catMap[e.category] = (catMap[e.category] ?? 0) + e.amount
+    }
+    const catRows = Object.entries(catMap).map(([cat, amt]) => [cat, `¥${amt.toFixed(2)}`, `${(amt / monthTotal * 100).toFixed(1)}%`])
+    catRows.push(['合计', `¥${monthTotal.toFixed(2)}`, '100%'])
+
+    doc.autoTable({
+      startY: lastTable.finalY + 10,
+      head: [['分类', '金额', '占比']],
+      body: catRows,
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: {
+        fillColor: [255, 107, 157],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: { fillColor: [255, 245, 248] },
+      columnStyles: {
+        0: { cellWidth: 60 },
+        1: { cellWidth: 50, halign: 'right' },
+        2: { cellWidth: 30, halign: 'right' },
+      },
+      footStyles: { fontStyle: 'bold', fillColor: [255, 235, 240] },
+      margin: { left: 14, right: 14 },
+    })
+
+    doc.save(`${y}-${m}-消费报表.pdf`)
   }
 
   const monthlyData = buildMonthlyData(expenses)
@@ -110,6 +184,7 @@ export function Charts({ expenses }) {
             <div className="chart-card-header">
               <button className="chart-back-btn" onClick={() => setDrillMonth(null)}>← 返回</button>
               <h3>{parseInt(drillMonth.slice(5))}月 每日消费</h3>
+              <button className="chart-pdf-btn" onClick={exportPDF}>📄 导出 PDF</button>
             </div>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={dailyData} margin={{ top: 16, right: 4, left: -16, bottom: 0 }}>
@@ -117,7 +192,7 @@ export function Charts({ expenses }) {
                 <XAxis dataKey="day" tick={{ fontSize: 11, fill: tickColor }} interval={4} />
                 <YAxis tick={{ fontSize: 11, fill: tickColor }} />
                 <Tooltip formatter={v => `¥${v}`} contentStyle={tooltipStyle} />
-                <Bar dataKey="total" fill="#D4AF37" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="total" fill="#FF6B9D" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </>
@@ -140,7 +215,7 @@ export function Charts({ expenses }) {
                   {monthlyData.map((entry, i) => (
                     <Cell
                       key={i}
-                      fill={entry.total > 0 ? '#D4AF37' : (dark ? 'rgba(212,175,55,0.1)' : 'rgba(212,175,55,0.15)')}
+                      fill={entry.total > 0 ? '#FF6B9D' : 'rgba(255,107,157,0.15)'}
                       fillOpacity={entry.total > 0 ? 1 : 0.5}
                     />
                   ))}

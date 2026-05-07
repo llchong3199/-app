@@ -9,14 +9,34 @@
 }
 
 .auth-brand {
+  position: relative;
   text-align: center;
   margin-bottom: 28px;
 }
+
+/* ── Hello Kitty 漂浮装饰元素 ── */
+.auth-deco {
+  pointer-events: none;
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.7;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+
+.auth-brand > div:nth-child(1) .auth-deco { animation-delay: 0s; }
+.auth-brand > div:nth-child(2) .auth-deco { animation-delay: 0.5s; }
+.auth-brand > div:nth-child(3) .auth-deco { animation-delay: 1.2s; }
+.auth-brand > div:nth-child(4) .auth-deco { animation-delay: 0.8s; }
+.auth-brand > div:nth-child(5) .auth-deco { animation-delay: 0.3s; }
+.auth-brand > div:nth-child(6) .auth-deco { animation-delay: 1.8s; }
 
 .auth-logo {
   font-size: 48px;
   display: block;
   margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(255,107,157,0.25));
 }
 
 .auth-brand h1 {
@@ -35,13 +55,14 @@
 
 .auth-card {
   background: var(--surface);
-  border-radius: 16px;
-  padding: 32px 28px;
+  border-radius: 22px;
+  padding: 36px 40px;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
   position: relative;
+  overflow: visible;
   animation: authCardIn 0.3s ease-out;
 }
 
@@ -60,35 +81,75 @@
 
 /* ── User grid ── */
 
-.user-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 10px;
+.user-grid-wrap {
+  position: relative;
   margin-bottom: 20px;
+  padding: 8px 0;
 }
 
-.user-card-wrap { position: relative; }
+.user-grid {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0 40px 10px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
+  scrollbar-width: thin;
+}
+
+.user-grid::-webkit-scrollbar { height: 4px; }
+.user-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Blur side cards when one card is actively hovered */
+.user-grid:has(.user-card-wrap:hover) .user-card-wrap:not(:hover) {
+  filter: blur(3px);
+  opacity: 0.55;
+  transition: filter 0.3s, opacity 0.3s;
+}
+
+.user-card-wrap {
+  position: relative;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  width: 160px;
+  z-index: 1;
+  transition: filter 0.3s, opacity 0.3s, z-index 0s;
+}
+
+.user-card-wrap:has(.user-btn:hover) {
+  z-index: 10;
+}
 
 .user-btn {
   width: 100%;
-  height: 92px;
-  background: var(--input-bg);
+  height: 115px;
+  background: var(--surface);
   border: 2px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 8px;
+  border-radius: 20px;
+  padding: 16px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  transition: border-color 0.2s, background 0.2s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: var(--shadow-sm);
 }
 
 .user-btn:hover {
   border-color: var(--gold-primary);
   background: var(--cat-tag-bg);
-  transform: translateY(-2px);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-hover);
+  position: relative;
+  z-index: 10;
+}
+
+.user-btn:active {
+  transform: scale(1.05);
 }
 
 .user-edit-btn {
@@ -155,7 +216,7 @@
   box-sizing: border-box;
   padding: 15px 16px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 16px;
   background: var(--input-bg);
   color: var(--text);
@@ -180,19 +241,19 @@
   background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
   color: var(--gold-deep);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, box-shadow 0.2s;
+  transition: all .3s ease;
   margin-top: 4px;
-  box-shadow: 0 2px 8px rgba(212,175,55,0.30);
+  box-shadow: 0 2px 8px rgba(255,107,157,0.25);
   letter-spacing: 0.3px;
 }
 
 .auth-btn:hover {
-  opacity: 0.88;
-  box-shadow: 0 4px 14px rgba(212,175,55,0.45);
+  box-shadow: 0 4px 14px rgba(255,107,157,0.40);
+  transform: translateY(-2px) scale(1.03);
 }
 
 .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -238,7 +299,7 @@
   align-items: center;
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--input-bg);
   transition: border-color 0.2s, background 0.2s;
 }
@@ -312,3 +373,4 @@
 .auth-btn-danger:hover {
   box-shadow: 0 4px 14px rgba(239,68,68,0.45) !important;
 }
+

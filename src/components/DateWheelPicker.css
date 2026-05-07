@@ -10,7 +10,7 @@
 
 .dp-panel {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: 22px;
   width: 340px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.3);
   animation: dpIn 0.22s ease-out;
@@ -120,7 +120,7 @@
   transform: translateY(-50%);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 10px;
   pointer-events: none;
   z-index: 2;
 }

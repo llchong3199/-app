@@ -67,11 +67,10 @@ export function useExpenses(userId) {
     setBudgets(prev => ({ ...prev, [category]: amount }))
   }
 
-  function addSavingsGoal({ name, emoji, targetAmount }) {
-    setSavingsGoals(prev => [...prev, {
-      id: Date.now().toString(),
-      name, emoji, targetAmount, savedAmount: 0,
-    }])
+  function addSavingsGoal({ name, emoji, targetAmount, targetDate }) {
+    const goal = { id: Date.now().toString(), name, emoji, targetAmount, savedAmount: 0 }
+    if (targetDate) goal.targetDate = targetDate
+    setSavingsGoals(prev => [...prev, goal])
   }
   function deleteSavingsGoal(id) {
     setSavingsGoals(prev => prev.filter(g => g.id !== id))
