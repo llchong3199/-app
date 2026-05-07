@@ -126,10 +126,11 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     audio.volume = 0.2
     audio.preload = 'auto'
 
+    const isDataUrl = file.startsWith('data:')
     audio.addEventListener('timeupdate', () => setMusicTime(audio.currentTime))
     audio.addEventListener('loadedmetadata', () => {
       setMusicDuration(audio.duration)
-      setupAnalyser(audio)
+      if (!isDataUrl) setupAnalyser(audio)
     })
     audio.addEventListener('play', () => setMusicPlaying(true))
     audio.addEventListener('pause', () => setMusicPlaying(false))

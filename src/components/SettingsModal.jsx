@@ -146,11 +146,6 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     if (!files?.length) return
     clearMsg()
     const file = files[0]
-    if (file.size > 5 * 1024 * 1024) {
-      setError('文件太大（超过 5MB），建议压缩后再试')
-      e.target.value = ''
-      return
-    }
     const name = file.name.replace(/\.(mp3|wav|ogg|flac|m4a)$/i, '')
     const reader = new FileReader()
     reader.onload = () => {
