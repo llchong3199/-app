@@ -127,7 +127,10 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     audio.preload = 'auto'
 
     audio.addEventListener('timeupdate', () => setMusicTime(audio.currentTime))
-    audio.addEventListener('loadedmetadata', () => setMusicDuration(audio.duration))
+    audio.addEventListener('loadedmetadata', () => {
+      setMusicDuration(audio.duration)
+      setupAnalyser(audio)
+    })
     audio.addEventListener('play', () => setMusicPlaying(true))
     audio.addEventListener('pause', () => setMusicPlaying(false))
     audio.addEventListener('ended', () => nextTrack())
@@ -146,7 +149,6 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
       setTimeout(() => nextTrack(), 1000)
     })
     audioRef.current = audio
-    setupAnalyser(audio)
     setCurrentTrack(index)
     setTrackLabel(pl[index]?.name ?? '')
     setMusicTime(0)
