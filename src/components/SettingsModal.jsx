@@ -46,10 +46,15 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
   }
 
   function handleExport() {
+    const userData = {}
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key.startsWith('et-data-')) userData[key] = localStorage.getItem(key)
+    }
     const data = {
       users: localStorage.getItem('et-users'),
       session: localStorage.getItem('et-session'),
-      expenseData: localStorage.getItem('expense-tracker-data'),
+      userData,
     }
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -68,10 +73,14 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result)
-        if (!data.expenseData) { setError('无效的数据文件'); return }
-        localStorage.setItem('et-users', data.users || '[]')
-        localStorage.setItem('et-session', data.session || '')
-        localStorage.setItem('expense-tracker-data', data.expenseData)
+        if (!data.users && !data.userData) { setError('无效的数据文件'); return }
+        if (data.users) localStorage.setItem('et-users', data.users)
+        if (data.session) localStorage.setItem('et-session', data.session)
+        if (data.userData) {
+          for (const [key, val] of Object.entries(data.userData)) {
+            localStorage.setItem(key, val)
+          }
+        }
         window.location.reload()
       } catch { setError('文件解析失败') }
     }
