@@ -303,6 +303,21 @@
   color: var(--gold-deep);
 }
 
+.music-restore-btn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: var(--gold-primary);
+  cursor: pointer;
+  padding: 0 2px;
+  text-decoration: underline;
+  transition: color 0.15s;
+}
+
+.music-restore-btn:hover {
+  color: var(--gold-deep);
+}
+
 .music-add-row {
   display: flex;
 }

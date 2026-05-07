@@ -31,6 +31,10 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     try { return JSON.parse(localStorage.getItem('et-custom-music') || '[]') }
     catch { return [] }
   })
+  const [hiddenBuiltin, setHiddenBuiltin] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]') }
+    catch { return [] }
+  })
 
   function clearMsg() { setError(''); setSuccess('') }
 
@@ -67,7 +71,8 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
       name,
       file: `/music/${['Kiss The Rain（淡淡伤感）.mp3','S.E.N.S. - 風のように.mp3','交界 (伴奏).mp3','山野煮雨 - 小野.mp3','神隱少女 - 生命之名.mp3'][i]}`,
       builtin: true,
-    }))
+      builtinIdx: i,
+    })).filter(t => !hiddenBuiltin.includes(t.builtinIdx))
     const custom = customTracks.map(t => ({ name: t.name, file: t.data, builtin: false }))
     return [...builtin, ...custom]
   }
@@ -118,12 +123,20 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
     e.target.value = ''
   }
 
-  function handleDeleteTrack(i) {
-    const tracks = customTracks.filter((_, idx) => idx !== i)
-    setCustomTracks(tracks)
-    localStorage.setItem('et-custom-music', JSON.stringify(tracks))
-    if (previewTrack === BUILTIN_NAMES.length + i) stopPreview()
-    setSuccess('已移除自定义音乐')
+  function handleDeleteTrack(track, listIdx) {
+    if (!track.builtin) {
+      const customIdx = listIdx - (BUILTIN_NAMES.length - hiddenBuiltin.length)
+      const tracks = customTracks.filter((_, idx) => idx !== customIdx)
+      setCustomTracks(tracks)
+      localStorage.setItem('et-custom-music', JSON.stringify(tracks))
+      setSuccess('已移除自定义音乐')
+    } else {
+      const newHidden = [...hiddenBuiltin, track.builtinIdx]
+      setHiddenBuiltin(newHidden)
+      localStorage.setItem('et-hidden-builtin', JSON.stringify(newHidden))
+      setSuccess(`已隐藏: ${track.name}`)
+    }
+    if (previewTrack === listIdx) stopPreview()
   }
 
   function handleExport() {
@@ -298,7 +311,21 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
             {/* ── 统计 ── */}
             <div className="music-stats">
               <span>共 {allTracks.length} 首</span>
-              <span>内置 {BUILTIN_NAMES.length} 首 · 自定义 {customTracks.length} 首</span>
+              <span style={{ fontSize: 12 }}>
+                内置 {BUILTIN_NAMES.length - hiddenBuiltin.length} 首
+                {hiddenBuiltin.length > 0 && (
+                  <button
+                    className="music-restore-btn"
+                    onClick={() => {
+                      setHiddenBuiltin([])
+                      localStorage.removeItem('et-hidden-builtin')
+                      setSuccess('已恢复所有内置音乐')
+                    }}
+                    title="恢复隐藏的内置音乐"
+                  >恢复 {hiddenBuiltin.length} 首隐藏</button>
+                )}
+                 · 自定义 {customTracks.length} 首
+              </span>
             </div>
 
             {/* ── 添加按钮 ── */}
@@ -318,7 +345,7 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
             {/* ── 曲目列表 ── */}
             <div className="music-track-list">
               {allTracks.map((t, i) => (
-                <div key={i} className={`music-track-item${previewTrack === i ? ' playing' : ''}`}>
+                <div key={`${t.builtin ? 'b' : 'c'}-${i}`} className={`music-track-item${previewTrack === i ? ' playing' : ''}`}>
                   <div className="music-track-left">
                     <button
                       className="music-track-play"
@@ -339,15 +366,14 @@ export function SettingsModal({ user, onUpdateAvatar, onUpdateUsername, onUpdate
                     <span className="music-track-label">
                       {t.name}
                       {t.builtin && <span className="music-track-badge">内置</span>}
+                      {!t.builtin && <span className="music-track-badge">自定义</span>}
                     </span>
                   </div>
-                  {!t.builtin && (
-                    <button
-                      className="music-track-remove"
-                      onClick={() => handleDeleteTrack(i - BUILTIN_NAMES.length)}
-                      title="移除"
-                    >×</button>
-                  )}
+                  <button
+                    className="music-track-remove"
+                    onClick={() => handleDeleteTrack(t, i)}
+                    title={t.builtin ? '隐藏' : '移除'}
+                  >×</button>
                 </div>
               ))}
             </div>

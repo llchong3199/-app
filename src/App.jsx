@@ -28,9 +28,10 @@ const BUILTIN_PLAYLIST = [
 
 function getFullPlaylist() {
   try {
+    const hiddenIdx = JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]')
+    const builtin = BUILTIN_PLAYLIST.filter((_, i) => !hiddenIdx.includes(i))
     const custom = JSON.parse(localStorage.getItem('et-custom-music') || '[]')
-    if (!custom.length) return BUILTIN_PLAYLIST
-    return [...BUILTIN_PLAYLIST, ...custom.map(t => ({ name: t.name, file: t.data }))]
+    return [...builtin, ...custom.map(t => ({ name: t.name, file: t.data }))]
   } catch { return BUILTIN_PLAYLIST }
 }
 
