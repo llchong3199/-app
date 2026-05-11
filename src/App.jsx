@@ -14,32 +14,18 @@ import { MonthWheelPicker } from './components/DateWheelPicker'
 import { SuccessModal } from './components/SuccessModal'
 import { UserAvatar } from './components/AvatarPicker'
 import { SettingsModal } from './components/SettingsModal'
+import { setCustomIcons } from './constants/categories'
 import './App.css'
 
 const TABS = ['记录', '图表', '预算', '储蓄', '分类']
 
-const BUILTIN_PLAYLIST = [
-  { name: '星辰大海', file: '/music/黄霄雲 - 星辰大海.mp3' },
-  { name: 'Counting Stars', file: '/music/OneRepublic - Counting Stars.mp3' },
-  { name: '少年', file: '/music/夢然 - 少年.mp3' },
-  { name: '小美满', file: '/music/周深 - 小美满.mp3' },
-  { name: '做自己的光', file: '/music/善宇 - 做自己的光.mp3' },
-  { name: '太阳之光', file: '/music/太阳之光.mp3' },
-  { name: '那些年', file: '/music/姜创钢琴 - 那些年.mp3' },
-  { name: '我相信', file: '/music/杨培安 - 我相信.mp3' },
-  { name: '一路生花', file: '/music/溫奕心 - 一路生花.mp3' },
-]
-
-function getPlaylist() {
-  const hiddenIdx = JSON.parse(localStorage.getItem('et-hidden-builtin') || '[]')
-  return BUILTIN_PLAYLIST.filter((_, i) => !hiddenIdx.includes(i))
-}
-
 function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUpdatePassword }) {
   const {
-    expenses, categories, addExpense, deleteExpense, editExpense, addCategory, deleteCategory,
+    expenses, categories, categoryIcons, addExpense, deleteExpense, editExpense, addCategory, deleteCategory,
     incomeByMonth, monthlyIncome, setIncomeForMonth, budgets, setCategoryBudget,
     savingsGoals, addSavingsGoal, deleteSavingsGoal, depositToGoal,
+    loans, addLoan, deleteLoan, payLoan,
+    fixedExpenses, addFixedExpense, deleteFixedExpense,
   } = useExpenses(user.id)
 
   const [tab, setTab] = useState('记录')
@@ -49,158 +35,12 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
   const [successExpense, setSuccessExpense] = useState(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showPiggy, setShowPiggy] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)
   const [piggyIncome, setPiggyIncome] = useState(0)
   const quoteIndexRef = useRef(0)
   const closeTimerRef = useRef(null)
   const playSound = useSuccessSound()
 
-  const audioRef = useRef(null)
-  const [musicPlaying, setMusicPlaying] = useState(true)
-  const [musicTime, setMusicTime] = useState(0)
-  const [musicDuration, setMusicDuration] = useState(0)
-  const [currentTrack, setCurrentTrack] = useState(0)
-  const [trackLabel, setTrackLabel] = useState(() => getPlaylist()[0]?.name ?? BUILTIN_PLAYLIST[0].name)
-  const audioCtxRef = useRef(null)
-  const analyserRef = useRef(null)
-  const sourceRef = useRef(null)
-  const canvasRef = useRef(null)
-  const animRef = useRef(null)
-
-  function setupAnalyser(audio) {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext
-      if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx()
-      const ctx = audioCtxRef.current
-      try { sourceRef.current?.disconnect() } catch {}
-      const analyser = ctx.createAnalyser()
-      analyser.fftSize = 32
-      const source = ctx.createMediaElementSource(audio)
-      source.connect(analyser)
-      analyser.connect(ctx.destination)
-      analyserRef.current = analyser
-      sourceRef.current = source
-      if (ctx.state === 'suspended') ctx.resume()
-    } catch (e) {
-      // analyser 初始化失败不影响音频播放
-      console.warn('[audio] analyser 跳过:', e)
-    }
-  }
-
-  function drawVisualizer() {
-    const canvas = canvasRef.current
-    const analyser = analyserRef.current
-    if (!canvas || !analyser) { animRef.current = requestAnimationFrame(drawVisualizer); return }
-    const rect = canvas.getBoundingClientRect()
-    if (canvas.width !== rect.width || canvas.height !== rect.height) {
-      canvas.width = rect.width
-      canvas.height = rect.height
-    }
-    const data = new Uint8Array(analyser.frequencyBinCount)
-    analyser.getByteFrequencyData(data)
-    const ctx = canvas.getContext('2d')
-    const w = canvas.width
-    const h = canvas.height
-    ctx.clearRect(0, 0, w, h)
-    const bc = 32
-    const bw = w / bc
-    for (let i = 0; i < bc; i++) {
-      const idx = i < 16 ? (data.length - 1 - i) : (i - 16)
-      const bh = Math.max(1, (data[idx] / 255) * h)
-      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,182,193,0.4)' : 'rgba(255,107,157,0.35)'
-      ctx.fillRect(i * bw + 0.5, h - bh, bw - 1, bh)
-    }
-    animRef.current = requestAnimationFrame(drawVisualizer)
-  }
-
-  useEffect(() => {
-    animRef.current = requestAnimationFrame(drawVisualizer)
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [])
-
-  function playTrack(index) {
-    const pl = getPlaylist()
-    const file = pl[index]?.file ?? pl[0].file
-    const src = file.startsWith('data:') ? file : encodeURI(file)
-    const audio = new Audio(src)
-    audio.volume = 0.1
-    audio.preload = 'auto'
-
-    const isDataUrl = file.startsWith('data:')
-    audio.addEventListener('timeupdate', () => setMusicTime(audio.currentTime))
-    audio.addEventListener('loadedmetadata', () => {
-      setMusicDuration(audio.duration)
-      if (!isDataUrl) setupAnalyser(audio)
-    })
-    audio.addEventListener('play', () => setMusicPlaying(true))
-    audio.addEventListener('pause', () => setMusicPlaying(false))
-    audio.addEventListener('ended', () => nextTrack())
-    audio.addEventListener('error', (e) => {
-      const msg = e.target?.error?.message || '未知错误'
-      console.warn('[audio] 播放失败:', msg)
-      setTimeout(() => nextTrack(), 1000)
-    })
-
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current.currentTime = 0
-    }
-    audio.play().catch(err => {
-      console.warn('[audio] play() 失败:', err)
-      setTimeout(() => nextTrack(), 1000)
-    })
-    audioRef.current = audio
-    setCurrentTrack(index)
-    setTrackLabel(pl[index]?.name ?? '')
-    setMusicTime(0)
-    setMusicDuration(0)
-  }
-
-  useEffect(() => {
-    playTrack(0)
-    return () => { if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0 } }
-  }, [])
-
-  // 设置关闭后刷新当前曲目信息
-  useEffect(() => {
-    if (refreshKey === 0) return
-    const pl = getPlaylist()
-    if (currentTrack >= pl.length && pl.length > 0) {
-      const next = currentTrack % pl.length
-      setCurrentTrack(next)
-      setTrackLabel(pl[next]?.name ?? '')
-    } else {
-      setTrackLabel(pl[currentTrack]?.name ?? '')
-    }
-  }, [refreshKey])
-
-  function toggleMusic() {
-    const a = audioRef.current
-    if (!a) return
-    if (a.paused) { a.play() } else { a.pause() }
-  }
-
-  function prevTrack() {
-    const len = getPlaylist().length
-    const prev = (currentTrack - 1 + len) % len
-    playTrack(prev)
-  }
-
-  function nextTrack() {
-    const len = getPlaylist().length
-    const next = (currentTrack + 1) % len
-    playTrack(next)
-  }
-
-  function seekMusic(e) {
-    const a = audioRef.current
-    if (!a || !musicDuration) return
-    const bar = e.currentTarget
-    const rect = bar.getBoundingClientRect()
-    const pct = (e.clientX - rect.left) / rect.width
-    a.currentTime = pct * musicDuration
-    setMusicTime(a.currentTime)
-  }
+  useEffect(() => { setCustomIcons(categoryIcons) }, [categoryIcons])
 
   const [leftWidth, setLeftWidth] = useState(300)
   const dragRef = useRef(null)
@@ -269,7 +109,6 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
     .reduce((s, e) => s + e.amount, 0)
 
   const freshAvatar = users.find(u => u.id === user.id)?.avatar ?? user.avatar
-  const showMusic = localStorage.getItem('et-show-music') !== 'false'
 
   return (
     <div className="app">
@@ -286,7 +125,7 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
           onUpdateAvatar={onUpdateAvatar}
           onUpdateUsername={onUpdateUsername}
           onUpdatePassword={onUpdatePassword}
-          onClose={() => { setShowSettings(false); setRefreshKey(k => k + 1) }}
+          onClose={() => setShowSettings(false)}
         />
       )}
       {showPiggy && piggyIncome > 0 && (
@@ -299,9 +138,10 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
 
       <header className="app-header">
         <div className="header-content">
-          <span className="header-deco">🎀</span>
-          <h1>Hello 记账</h1>
-          <span className="month-total">本月 ¥{monthTotal.toFixed(2)}</span>
+          <img src="/kitty-header.jpg" className="header-kitty-bg" alt="" />
+          <div className="header-title-stack">
+            <h1><span className="header-kitty-name">Kitty</span> 记账</h1>
+          </div>
           <div className="header-user">
             <button
               className="header-avatar-btn"
@@ -314,66 +154,23 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
             <button className="logout-btn" onClick={onLogout}>退出</button>
           </div>
         </div>
-
-        {showMusic && (
-        <div className="music-bar">
-          <div className={`music-vinyl ${musicPlaying ? 'spinning' : ''}`}>
-            <span>🎵</span>
-          </div>
-          <div className="music-controls">
-            <button className="music-ctrl-btn" onClick={prevTrack} title="上一首">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <polygon points="16,5 8,12 16,19" />
-                <rect x="7" y="5" width="2" height="14" rx="0.5" />
-              </svg>
-            </button>
-            <button className="music-ctrl-btn music-play-btn" onClick={toggleMusic} title={musicPlaying ? '暂停' : '播放'}>
-              {musicPlaying ? (
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <rect x="7" y="4" width="3" height="16" rx="0.5" />
-                  <rect x="14" y="4" width="3" height="16" rx="0.5" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <polygon points="7,4 19,12 7,20" />
-                </svg>
-              )}
-            </button>
-            <button className="music-ctrl-btn" onClick={nextTrack} title="下一首">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <polygon points="8,5 16,12 8,19" />
-                <rect x="15" y="5" width="2" height="14" rx="0.5" />
-              </svg>
-            </button>
-          </div>
-          <div className="music-info">
-            <span className="music-track-name">{trackLabel}</span>
-            <div className="music-viz-progress">
-              <canvas ref={canvasRef} className="music-viz-canvas" />
-              <div className="music-progress-wrap" onMouseDown={seekMusic}>
-                <div className="music-progress-bar">
-                  <div
-                    className="music-progress-fill"
-                    style={{ width: musicDuration ? `${(musicTime / musicDuration) * 100}%` : '0%' }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="header-month-area">
+          <span className="month-total">本月 ¥{monthTotal.toFixed(2)}</span>
         </div>
-        )}
 
-        <nav className="tabs">
-          {TABS.map(t => (
-            <button
-              key={t}
-              className={`tab${tab === t ? ' active' : ''}`}
-              onClick={() => setTab(t)}
-            >
-              {t}
-            </button>
-          ))}
-        </nav>
+        <div className="header-nav">
+          <nav className="tabs">
+            {TABS.map(t => (
+              <button
+                key={t}
+                className={`tab${tab === t ? ' active' : ''}`}
+                onClick={() => setTab(t)}
+              >
+                {t}
+              </button>
+            ))}
+          </nav>
+                  </div>
       </header>
 
       <main className="app-main">
@@ -393,27 +190,29 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
                   onClose={() => setShowMonthPicker(false)}
                 />
               )}
-              <div className="list-header">
-                <div className="list-header-left">
-                  <h2>消费明细</h2>
-                  <div className="month-nav">
-                    <button className="month-nav-btn" onClick={() => setMonthFilter(shiftMonth(monthFilter, -1))}>‹</button>
-                    <button className="month-nav-label" onClick={() => setShowMonthPicker(true)}>
-                      {formatMonthLabel(monthFilter)}
-                    </button>
-                    <button className="month-nav-btn" onClick={() => setMonthFilter(shiftMonth(monthFilter, 1))}>›</button>
+              <div className="record-list-card">
+                <div className="list-header">
+                  <h2 className="list-header-title">消费明细</h2>
+                  <div className="list-header-center">
+                    <div className="month-nav">
+                      <button className="month-nav-btn" onClick={() => setMonthFilter(shiftMonth(monthFilter, -1))}>‹</button>
+                      <button className="month-nav-label" onClick={() => setShowMonthPicker(true)}>
+                        {formatMonthLabel(monthFilter)}
+                      </button>
+                      <button className="month-nav-btn" onClick={() => setMonthFilter(shiftMonth(monthFilter, 1))}>›</button>
+                    </div>
                   </div>
+                  <select
+                    className="filter-select"
+                    value={filter}
+                    onChange={e => setFilter(e.target.value)}
+                  >
+                    <option value="all">全部分类</option>
+                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
-                <select
-                  className="filter-select"
-                  value={filter}
-                  onChange={e => setFilter(e.target.value)}
-                >
-                  <option value="all">全部分类</option>
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <ExpenseList key={`${monthFilter}-${filter}`} expenses={filteredExpenses} categories={categories} onDelete={deleteExpense} onEdit={editExpense} />
               </div>
-              <ExpenseList key={`${monthFilter}-${filter}`} expenses={filteredExpenses} categories={categories} onDelete={deleteExpense} onEdit={editExpense} />
             </div>
           </div>
         )}
@@ -428,6 +227,9 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
             budgets={budgets}
             onSetIncome={handleSetIncome}
             onSetBudget={setCategoryBudget}
+            fixedExpenses={fixedExpenses}
+            onAddFixedExpense={addFixedExpense}
+            onDeleteFixedExpense={deleteFixedExpense}
           />
         )}
 
@@ -438,12 +240,17 @@ function MainApp({ user, users, onLogout, onUpdateAvatar, onUpdateUsername, onUp
             onAdd={addSavingsGoal}
             onDelete={deleteSavingsGoal}
             onDeposit={depositToGoal}
+            loans={loans}
+            onAddLoan={addLoan}
+            onDeleteLoan={deleteLoan}
+            onPayLoan={payLoan}
           />
         )}
 
         {tab === '分类' && (
           <CategoryManager
             categories={categories}
+            categoryIcons={categoryIcons}
             onAdd={addCategory}
             onDelete={deleteCategory}
           />

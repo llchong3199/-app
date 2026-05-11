@@ -260,6 +260,7 @@
 .auth-user-display {
   text-align: center;
   margin-bottom: 24px;
+  margin-top: 16px;
 }
 
 .auth-user-display h2 { margin-top: 10px; }
@@ -440,5 +441,38 @@
 
 .auth-btn-danger:hover {
   box-shadow: 0 4px 14px rgba(239,68,68,0.45) !important;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+  .auth-brand {
+    margin-bottom: 18px;
+  }
+  .auth-logo {
+    font-size: 38px;
+  }
+  .auth-brand h1 {
+    font-size: 20px;
+  }
+  .user-card-wrap {
+    width: 130px;
+  }
+  .user-btn {
+    height: 96px;
+    padding: 12px 6px;
+  }
+  .user-emoji {
+    font-size: 26px;
+  }
+  .user-name {
+    font-size: 12px;
+  }
+  .auth-field input {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
 }
 

@@ -9,6 +9,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  margin-top: 16px;
 }
 
 .chart-card {
@@ -18,6 +19,19 @@
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
   transition: background 0.3s;
+}
+
+.chart-card-pie {
+  display: flex;
+  flex-direction: column;
+}
+
+.pie-svg-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
 }
 
 .chart-card h3 {
@@ -86,66 +100,38 @@
   transform: translateY(-1px);
 }
 
-/* ── Pie 图例 ── */
-.pie-legend {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.pie-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text);
-  padding: 4px 8px;
-  border-radius: 8px;
-  transition: background 0.15s;
-}
-
-.pie-legend-item:hover {
-  background: var(--cat-tag-bg);
-}
-
-.pie-legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.pie-legend-icon {
-  font-size: 15px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.pie-legend-name {
-  flex: 1;
-  font-weight: 500;
-}
-
-.pie-legend-value {
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-}
-
-.pie-legend-pct {
-  color: var(--text-3);
-  font-size: 12px;
-  min-width: 48px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ── Pie 入场动画 ── */
 @keyframes pieEnter {
   from { opacity: 0; transform: scale(0.6) rotate(-20deg); }
   to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
+@keyframes labelsIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @media (max-width: 700px) {
   .charts { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .chart-card {
+    padding: 16px;
+  }
+  .chart-card h3 {
+    font-size: 14px;
+  }
+  .chart-total {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .chart-card-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chart-pdf-btn {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
 }

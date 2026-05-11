@@ -1,7 +1,7 @@
 :root {
   /* ── Hello Kitty 调色盘 ── */
   --bg:              #FFF9F7;
-  --bg-gradient:     linear-gradient(180deg, #FFF9F7 0%, #FFD6E7 45%, #FFF1F6 100%);
+  --bg-gradient:     linear-gradient(170deg, #FFF9F7 0%, #FFD0DE 28%, #F5BCE9 42%, #D8B4FE 58%, #EDD8FE 74%, #FFF9F7 100%);
   --surface:         #FFFFFF;
   --surface-2:       #FFF5F8;
 
@@ -59,6 +59,10 @@
 
 * { box-sizing: border-box; }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: "Fredoka", "Nunito", "PingFang SC", "Hiragino Sans GB",
@@ -67,6 +71,7 @@ body {
   background-attachment: fixed;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 #root { min-height: 100vh; }

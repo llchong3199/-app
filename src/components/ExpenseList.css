@@ -288,3 +288,32 @@
 }
 
 .edit-save-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+@media (max-width: 480px) {
+  .expense-item {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .expense-icon-col {
+    width: 44px;
+    height: 44px;
+  }
+  .expense-main-icon {
+    font-size: 20px;
+  }
+  .expense-note {
+    font-size: 13px;
+  }
+  .expense-amount {
+    font-size: 14px;
+  }
+  .edit-panel {
+    width: calc(100vw - 32px);
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+  .edit-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

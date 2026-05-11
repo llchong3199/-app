@@ -7,24 +7,109 @@
 .app-header {
   position: sticky;
   top: 0;
-  background: transparent;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 8px 0 0;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   z-index: 10;
+  box-sizing: border-box;
 }
 
-.header-content {
+/* ── 宽屏：header 撑满视口，kitty 浮在左侧留白 ── */
+@media (min-width: 1201px) {
+  .app-header {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+
+  /* kitty + 用户区绝对定位，不占高度 */
+  .header-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 20px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .header-title-wrap,
+  .header-user {
+    pointer-events: auto;
+  }
+
+}
+
+/* ── 窄屏（含 Safari 侧边栏）：正常文档流 ── */
+@media (max-width: 1200px) {
+  .header-content {
+    position: static;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px 0;
+  }
+
+  .header-nav {
+    padding-top: 6px;
+  }
+
+  .header-month-area {
+    display: none;
+  }
+}
+
+/* 所有尺寸共用的 header-nav 基础样式 */
+.header-nav {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+  padding: 36px 20px 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  background-image: linear-gradient(to right, transparent 30px, rgba(255,107,157,0.35) 30px);
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
 }
 
 .app-header h1 {
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--gold-deep);
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.header-title-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 72px;
+}
+
+.header-kitty-bg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  transform: rotate(-30deg);
+  margin-top: 8px;
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.92) 32%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0) 74%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,0.92) 32%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0) 74%);
+}
+
+.header-kitty-name {
+  font-size: 28px;
+  font-weight: 800;
   letter-spacing: 0.5px;
 }
 
@@ -35,147 +120,38 @@
   filter: drop-shadow(0 2px 6px rgba(255,107,157,0.3));
 }
 
+.header-title-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 2px;
+  margin-top: 10px;
+}
+
+.header-month-area {
+  position: fixed;
+  left: 70px;
+  top: 128px;
+  pointer-events: none;
+  z-index: 9;
+}
+
 .month-total {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--gold-primary);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .header-user {
   margin-left: auto;
+  margin-right: 32px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-top: 4px;
+  padding-top: 12px;
 }
 
-/* ── Music bar ── */
-
-.music-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0 4px;
-  border-bottom: 1px solid var(--border-2);
-}
-
-.music-vinyl {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  color: #fff;
-  flex-shrink: 0;
-  box-shadow: 0 0 10px rgba(255,107,157,0.35);
-}
-
-.music-vinyl.spinning {
-  animation: spinVinyl 2s linear infinite;
-}
-
-@keyframes spinVinyl {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.header-content + .music-bar {
-  margin-top: -8px;
-}
-
-.music-controls {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.music-ctrl-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  padding: 4px 6px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.15s, transform 0.15s;
-  line-height: 1;
-  color: var(--text-2);
-}
-
-.music-ctrl-btn:hover {
-  background: var(--border-2);
-  transform: scale(1.1);
-}
-
-.music-play-btn {
-  font-size: 18px;
-  padding: 4px 8px;
-}
-
-.music-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-}
-
-.music-track-name {
-  font-size: 12px;
-  color: var(--text-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
-  flex-shrink: 0;
-}
-
-.music-viz-progress {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 60px;
-}
-
-.music-viz-canvas {
-  width: 100%;
-  height: 16px;
-  display: block;
-  pointer-events: none;
-  border-radius: 2px;
-}
-
-.music-progress-wrap {
-  width: 100%;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.music-progress-bar {
-  width: 100%;
-  height: 4px;
-  background: var(--border-2);
-  border-radius: 3px;
-  overflow: hidden;
-  transition: height 0.15s;
-}
-
-.music-progress-wrap:hover .music-progress-bar {
-  height: 7px;
-}
-
-.music-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold-primary), var(--gold-copper));
-  border-radius: 3px;
-  transition: width 0.3s linear;
-}
 
 .header-avatar-btn {
   background: none;
@@ -215,25 +191,26 @@
 .tabs {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid rgba(255, 107, 157, 0.35);
-  margin-bottom: 16px;
+  padding-left: 24px;
 }
 
 .tab {
   background: none;
   border: none;
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 10px 22px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-2);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, transform 0.15s, font-weight 0.15s;
 }
 
 .tab:hover {
   color: var(--gold-primary);
+  font-weight: 700;
+  transform: scale(1.12);
 }
 
 .tab.active {
@@ -246,18 +223,19 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 0 10px;
 }
 
 .record-layout {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   gap: 0;
 }
 
 .record-left {
   flex-shrink: 0;
   position: sticky;
-  top: 130px;
+  top: 90px;
 }
 
 .resize-handle {
@@ -317,6 +295,28 @@
   padding-left: 12px;
 }
 
+.record-list-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 20px 24px 0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 130px);
+  overflow: hidden;
+}
+
+.record-list-card .expense-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-primary) var(--border-2);
+}
+
 @media (max-width: 720px) {
   .record-layout {
     flex-direction: column;
@@ -333,40 +333,42 @@
 .list-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
-.list-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.list-header h2 {
+.list-header-title {
+  flex-shrink: 0;
   font-size: 17px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--gold-deep);
+  margin: 0;
 }
+
+.list-header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
 
 .month-nav {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   background: var(--surface);
   border: 1px solid var(--border-2);
   border-radius: 12px;
-  padding: 2px 4px;
+  padding: 4px 40px;
 }
 
 .month-nav-btn {
   background: none;
   border: none;
   color: var(--text-2);
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 4px 12px;
   line-height: 1;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: color 0.15s, background 0.15s;
 }
 
@@ -378,12 +380,12 @@
 .month-nav-label {
   background: none;
   border: none;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--gold-deep);
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 4px 12px;
+  border-radius: 8px;
   transition: color 0.15s, background 0.15s;
   white-space: nowrap;
 }
@@ -400,11 +402,97 @@
   font-size: 13px;
   outline: none;
   background: var(--surface);
-  color: var(--text);
+  color: var(--gold-deep);
   cursor: pointer;
+  font-weight: 600;
   transition: border-color 0.2s;
+}
+
+.filter-select:hover {
+  border-color: var(--gold-primary);
 }
 
 .filter-select:focus {
   border-color: var(--gold-primary);
+}
+
+/* ══════════════════════════════════════
+   手机端响应式 (≤ 480px)
+══════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .app {
+    padding: 0 12px 32px;
+  }
+
+  /* Header */
+  .header-content {
+    gap: 8px;
+    padding: 6px 12px;
+  }
+  .header-kitty-bg {
+    width: 48px;
+    height: 48px;
+  }
+  .header-kitty-name {
+    font-size: 22px;
+  }
+  .app-header h1 {
+    font-size: 18px;
+  }
+  .month-total {
+    font-size: 11px;
+  }
+  .header-username {
+    display: none;
+  }
+  .header-deco {
+    font-size: 18px;
+  }
+
+
+  /* Tabs */
+  .tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* App main */
+  .app-main {
+    gap: 14px;
+  }
+
+  /* List header */
+  .list-header-title {
+    font-size: 14px;
+  }
+  .month-nav-label {
+    font-size: 12px;
+  }
+  .filter-select {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  /* Logout btn */
+  .logout-btn {
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+}
+
+/* ══════════════════════════════════════
+   平板端响应式 (481px – 700px)
+══════════════════════════════════════ */
+@media (max-width: 700px) and (min-width: 481px) {
+  .app {
+    padding: 0 16px 40px;
+  }
+  .header-kitty-bg {
+    width: 58px;
+    height: 58px;
+  }
+  .header-kitty-name {
+    font-size: 26px;
+  }
 }

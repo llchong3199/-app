@@ -1,12 +1,167 @@
-.budget-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: start;
+/* ── 外层包裹（面板 + 底部手柄）── */
+
+.budget-panel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
+/* ── 主面板（两列固定高度）── */
+
+.budget-panel {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.budget-income-col {
+  flex: 0 0 calc(50% - 10px);
+  min-width: 280px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.budget-right-col {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.budget-budget-pane {
+  overflow: auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.budget-fixed-pane {
+  overflow: auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* ── 中间拖拽手柄（分类预算 / 固定开销）── */
+
+.budget-vresize-handle {
+  height: 16px;
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.budget-vresize-handle::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--border-2);
+  border-radius: 2px;
+  transition: background 0.2s, height 0.2s;
+}
+
+.budget-vresize-handle:hover::before,
+.budget-vresize-handle:active::before {
+  background: var(--gold-primary);
+  height: 3px;
+}
+
+.budget-vresize-dots {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    to right, var(--border) 0px, var(--border) 4px, transparent 4px, transparent 8px
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.budget-vresize-handle:hover .budget-vresize-dots {
+  opacity: 1;
+}
+
+/* ── 底部拖拽手柄（调整总高度）── */
+
+.budget-bottom-handle {
+  height: 18px;
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  margin-top: 2px;
+}
+
+.budget-bottom-handle::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--border-2);
+  border-radius: 2px;
+  transition: background 0.2s, height 0.2s;
+}
+
+.budget-bottom-handle:hover::before,
+.budget-bottom-handle:active::before {
+  background: var(--gold-primary);
+  height: 3px;
+}
+
+.budget-bottom-dots {
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    to right, var(--border) 0px, var(--border) 4px, transparent 4px, transparent 8px
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.budget-bottom-handle:hover .budget-bottom-dots {
+  opacity: 1;
+}
+
+/* ── 窄屏：堆叠布局，取消固定高度 ── */
+
 @media (max-width: 700px) {
-  .budget-panel { grid-template-columns: 1fr; }
+  .budget-panel {
+    flex-direction: column;
+    height: auto !important;
+    overflow: visible;
+  }
+  .budget-income-col,
+  .budget-right-col {
+    flex: 0 0 100%;
+    width: 100%;
+    height: auto !important;
+    overflow-y: visible;
+  }
+  .budget-budget-pane,
+  .budget-fixed-pane {
+    height: auto !important;
+    overflow-y: visible;
+  }
+  .budget-vresize-handle,
+  .budget-bottom-handle {
+    display: none;
+  }
 }
 
 .budget-card {
@@ -15,6 +170,8 @@
   padding: 24px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
 }
 
 .budget-section-title {
@@ -256,6 +413,24 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.budget-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.budget-list::-webkit-scrollbar-track {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.budget-list::-webkit-scrollbar-thumb {
+  background: var(--gold-primary);
+  border-radius: 2px;
 }
 
 .budget-item {
@@ -433,4 +608,328 @@
 .budget-input-hint.over {
   color: #ef4444;
   font-weight: 500;
+}
+
+/* ── 固定开销列表 ── */
+
+.fixed-expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 14px;
+}
+
+.fixed-expense-empty {
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 12px 0;
+  font-style: italic;
+}
+
+.fixed-expense-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.fixed-expense-item:last-of-type { border-bottom: none; }
+
+.fixed-expense-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.fixed-expense-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fixed-expense-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  white-space: nowrap;
+}
+
+.fixed-per-month {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-3);
+  margin-left: 2px;
+}
+
+.fixed-expense-del {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-3);
+  font-size: 16px;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.fixed-expense-del:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239,68,68,0.06);
+}
+
+.fixed-expense-locked {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.45;
+}
+
+.fixed-loan-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #c084fc;
+  background: rgba(192,132,252,0.12);
+  border: 1px solid rgba(192,132,252,0.25);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 5px;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+.fixed-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  margin-top: 6px;
+  background: linear-gradient(135deg, rgba(255,107,157,0.08), rgba(255,139,191,0.06));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.fixed-total-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold-deep);
+}
+
+/* ── 固定开销添加触发按钮 ── */
+
+.fixed-add-trigger {
+  width: 100%;
+  padding: 10px;
+  background: var(--input-bg);
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+}
+
+.fixed-add-trigger:hover {
+  border-color: var(--gold-primary);
+  color: var(--gold-deep);
+  background: var(--input-focus);
+  transform: translateY(-1px);
+}
+
+/* ── 固定开销添加表单 ── */
+
+.fixed-add-form {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--cat-tag-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fixed-emoji-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fixed-emoji-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.fixed-emoji-btn:hover { background: var(--surface); transform: scale(1.1); }
+
+.fixed-emoji-btn.selected {
+  border-color: var(--gold-primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 2.5px rgba(255,107,157,0.28);
+}
+
+.fixed-form-inputs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fixed-text-input {
+  flex: 1;
+  min-width: 160px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.fixed-text-input:focus { border-color: var(--gold-primary); }
+
+.fixed-amount-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--input-bg);
+  flex: 0 0 170px;
+}
+
+.fixed-amount-prefix {
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-primary);
+}
+
+.fixed-per-month-label {
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.fixed-amount-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 9px 4px 9px 0;
+  font-size: 14px;
+  background: transparent;
+  color: var(--text);
+  min-width: 0;
+  width: 80px;
+}
+
+.fixed-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin: -4px 0;
+}
+
+.fixed-form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.fixed-cancel-btn {
+  flex: 1;
+  padding: 9px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.fixed-cancel-btn:hover { border-color: var(--text-2); background: var(--surface); }
+
+.fixed-confirm-btn {
+  flex: 2;
+  padding: 9px;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  color: var(--gold-deep);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fixed-confirm-btn:hover { opacity: 0.88; transform: translateY(-1px) scale(1.02); }
+
+/* ── 固定开销在收入汇总里的显示 ── */
+
+.allocation-fixed {
+  font-weight: 600;
+  color: #818cf8;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .budget-card {
+    padding: 16px;
+  }
+  .budget-section-title {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .budget-tip {
+    font-size: 11px;
+  }
+  .income-form input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  .budget-item-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .fixed-expense-item {
+    gap: 6px;
+  }
+  .fixed-expense-name {
+    font-size: 12px;
+  }
+  .fixed-expense-amount {
+    font-size: 12px;
+  }
+  .fixed-add-trigger {
+    font-size: 13px;
+    padding: 10px;
+  }
 }

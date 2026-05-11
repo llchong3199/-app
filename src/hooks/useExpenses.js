@@ -34,12 +34,24 @@ export function useExpenses(userId) {
     try { return JSON.parse(localStorage.getItem(storageKey))?.savingsGoals ?? [] }
     catch { return [] }
   })
+  const [loans, setLoans] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey))?.loans ?? [] }
+    catch { return [] }
+  })
+  const [fixedExpenses, setFixedExpenses] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey))?.fixedExpenses ?? [] }
+    catch { return [] }
+  })
+  const [categoryIcons, setCategoryIcons] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey))?.categoryIcons ?? {} }
+    catch { return {} }
+  })
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify({
-      expenses, categories, incomeByMonth, budgets, savingsGoals,
+      expenses, categories, incomeByMonth, budgets, savingsGoals, loans, fixedExpenses, categoryIcons,
     }))
-  }, [expenses, categories, incomeByMonth, budgets, savingsGoals])
+  }, [expenses, categories, incomeByMonth, budgets, savingsGoals, loans, fixedExpenses, categoryIcons])
 
   function addExpense(expense) {
     setExpenses(prev => [{ ...expense, id: Date.now().toString() }, ...prev])
@@ -50,12 +62,15 @@ export function useExpenses(userId) {
   function editExpense(id, data) {
     setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...data, id: e.id } : e))
   }
-  function addCategory(name) {
+  function addCategory(name, icon = '') {
     const trimmed = name.trim()
-    if (trimmed && !categories.includes(trimmed)) setCategories(prev => [...prev, trimmed])
+    if (!trimmed || categories.includes(trimmed)) return
+    setCategories(prev => [...prev, trimmed])
+    if (icon) setCategoryIcons(prev => ({ ...prev, [trimmed]: icon }))
   }
   function deleteCategory(name) {
     setCategories(prev => prev.filter(c => c !== name))
+    setCategoryIcons(prev => { const n = { ...prev }; delete n[name]; return n })
   }
 
   // Set income for a specific month
@@ -77,17 +92,58 @@ export function useExpenses(userId) {
   }
   function depositToGoal(id, amount) {
     setSavingsGoals(prev => prev.map(g =>
-      g.id === id ? { ...g, savedAmount: parseFloat((g.savedAmount + amount).toFixed(2)) } : g
+      g.id === id ? { ...g, savedAmount: parseFloat(Math.min(g.targetAmount, g.savedAmount + amount).toFixed(2)) } : g
     ))
+  }
+
+  function addLoan({ name, emoji, totalAmount, monthlyPayment, startDate, endDate }) {
+    const loanId = Date.now().toString()
+    const fixedId = (Date.now() + 1).toString()
+    const loan = { id: loanId, name, emoji, totalAmount, monthlyPayment, paidAmount: 0, fixedExpenseId: fixedId }
+    if (startDate) loan.startDate = startDate
+    if (endDate) loan.endDate = endDate
+    setLoans(prev => [...prev, loan])
+    setFixedExpenses(prev => [...prev, { id: fixedId, name, emoji, amount: monthlyPayment, fromLoan: true }])
+  }
+  function deleteLoan(id) {
+    let fixedId = null
+    setLoans(prev => {
+      const loan = prev.find(l => l.id === id)
+      if (loan?.fixedExpenseId) fixedId = loan.fixedExpenseId
+      return prev.filter(l => l.id !== id)
+    })
+    if (fixedId) setFixedExpenses(prev => prev.filter(f => f.id !== fixedId))
+  }
+  function payLoan(id, amount) {
+    let fixedIdToRemove = null
+    setLoans(prev => prev.map(l => {
+      if (l.id !== id) return l
+      const newPaid = parseFloat(Math.min(l.totalAmount, l.paidAmount + amount).toFixed(2))
+      if (newPaid >= l.totalAmount && l.fixedExpenseId) {
+        fixedIdToRemove = l.fixedExpenseId
+        return { ...l, paidAmount: newPaid, fixedExpenseId: null }
+      }
+      return { ...l, paidAmount: newPaid }
+    }))
+    if (fixedIdToRemove) setFixedExpenses(prev => prev.filter(f => f.id !== fixedIdToRemove))
+  }
+
+  function addFixedExpense({ name, emoji, amount }) {
+    setFixedExpenses(prev => [...prev, { id: Date.now().toString(), name, emoji, amount }])
+  }
+  function deleteFixedExpense(id) {
+    setFixedExpenses(prev => prev.filter(f => f.id !== id))
   }
 
   const currentMonth = new Date().toISOString().slice(0, 7)
   const monthlyIncome = incomeByMonth[currentMonth] ?? 0   // convenience for piggy/savings
 
   return {
-    expenses, categories, addExpense, deleteExpense, editExpense, addCategory, deleteCategory,
+    expenses, categories, categoryIcons, addExpense, deleteExpense, editExpense, addCategory, deleteCategory,
     incomeByMonth, monthlyIncome, setIncomeForMonth,
     budgets, setCategoryBudget,
     savingsGoals, addSavingsGoal, deleteSavingsGoal, depositToGoal,
+    loans, addLoan, deleteLoan, payLoan,
+    fixedExpenses, addFixedExpense, deleteFixedExpense,
   }
 }
