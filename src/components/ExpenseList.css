@@ -11,44 +11,59 @@
   gap: 10px;
 }
 
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .expense-item {
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--surface);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 14px 16px;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s, background 0.3s;
+  border: 1px solid var(--border-2);
+  transition: box-shadow 0.2s, background 0.3s, border-color 0.2s;
+  animation: itemIn 0.22s ease-out both;
 }
 
 .expense-item:hover {
   box-shadow: var(--shadow-hover);
+  border-color: var(--border);
 }
 
 .expense-icon-col {
-  position: relative;
-  width: 40px;
-  height: 40px;
   flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  border: 1px solid transparent;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
 }
 
 .expense-main-icon {
+  font-size: 24px;
   line-height: 1;
-  transition: font-size 0.3s;
   display: block;
+  text-align: center;
 }
 
-.expense-tag {
-  font-size: 12px;
+.expense-icon-label {
+  font-size: 10px;
   font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
   white-space: nowrap;
-  flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .expense-info {
@@ -75,8 +90,24 @@
 .expense-amount {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--gold-deep);
   flex-shrink: 0;
+}
+
+.expense-edit {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.expense-item:hover .expense-edit {
+  opacity: 1;
 }
 
 .expense-delete {
@@ -93,4 +124,196 @@
 
 .expense-delete:hover {
   color: #ef4444;
+}
+
+/* ── Edit modal ── */
+
+.edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.edit-panel {
+  background: var(--surface);
+  border-radius: 22px;
+  width: 340px;
+  padding: 24px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  animation: editIn 0.2s ease-out;
+}
+
+@keyframes editIn {
+  from { opacity: 0; transform: scale(0.93); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+
+.edit-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--text-3);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.edit-close:hover { color: var(--text); }
+
+.edit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.edit-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.edit-field input,
+.edit-field select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  background: var(--input-bg);
+  color: var(--text);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+  border-color: var(--gold-primary);
+  background: var(--input-focus);
+}
+
+.edit-date-trigger {
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.edit-date-trigger:hover {
+  border-color: var(--gold-primary);
+  background: var(--input-focus);
+}
+
+.date-cal-icon {
+  align-self: flex-end;
+  padding-bottom: 3px;
+  padding-right: 2px;
+  color: var(--text-2);
+  display: flex;
+  transition: color 0.2s;
+}
+
+.edit-date-trigger:hover .date-cal-icon {
+  color: var(--gold-primary);
+}
+
+.edit-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin: -6px 0 10px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.edit-cancel-btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.edit-cancel-btn:hover { border-color: var(--text-2); background: var(--cat-tag-bg); }
+
+.edit-save-btn {
+  flex: 2;
+  padding: 10px;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  cursor: pointer;
+  transition: all .3s ease;
+}
+
+.edit-save-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+@media (max-width: 480px) {
+  .expense-item {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .expense-icon-col {
+    width: 44px;
+    height: 44px;
+  }
+  .expense-main-icon {
+    font-size: 20px;
+  }
+  .expense-note {
+    font-size: 13px;
+  }
+  .expense-amount {
+    font-size: 14px;
+  }
+  .edit-panel {
+    width: calc(100vw - 32px);
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+  .edit-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }

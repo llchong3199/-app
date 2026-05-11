@@ -1,0 +1,478 @@
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px 15vh;
+  background: linear-gradient(170deg, #FFF9F7 0%, #FFD0DE 30%, #FFB7D1 55%, #FFE4EF 80%, #FFF9F7 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── 金粉闪粉效果 ── */
+.auth-screen::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(2px 2px at 8% 12%, rgba(255,215,0,0.55), transparent),
+    radial-gradient(1.5px 1.5px at 22% 38%, rgba(255,215,0,0.35), transparent),
+    radial-gradient(2.5px 2.5px at 35% 18%, rgba(255,215,0,0.45), transparent),
+    radial-gradient(1px 1px at 48% 55%, rgba(255,215,0,0.3), transparent),
+    radial-gradient(2px 2px at 60% 8%, rgba(255,215,0,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 75% 42%, rgba(255,215,0,0.4), transparent),
+    radial-gradient(2px 2px at 88% 28%, rgba(255,215,0,0.35), transparent),
+    radial-gradient(1px 1px at 95% 65%, rgba(255,215,0,0.5), transparent),
+    radial-gradient(2.5px 2.5px at 12% 70%, rgba(255,215,0,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 30% 85%, rgba(255,215,0,0.35), transparent),
+    radial-gradient(2px 2px at 50% 92%, rgba(255,215,0,0.45), transparent),
+    radial-gradient(1px 1px at 68% 78%, rgba(255,215,0,0.3), transparent),
+    radial-gradient(2px 2px at 82% 90%, rgba(255,215,0,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 42% 48%, rgba(255,215,0,0.4), transparent),
+    radial-gradient(2px 2px at 55% 62%, rgba(255,215,0,0.35), transparent),
+    radial-gradient(1px 1px at 18% 50%, rgba(255,215,0,0.45), transparent),
+    radial-gradient(2.5px 2.5px at 72% 15%, rgba(255,215,0,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 90% 72%, rgba(255,215,0,0.5), transparent),
+    radial-gradient(2px 2px at 38% 32%, rgba(255,215,0,0.4), transparent),
+    radial-gradient(1px 1px at 65% 50%, rgba(255,215,0,0.35), transparent),
+    radial-gradient(2px 2px at 15% 88%, rgba(255,215,0,0.45), transparent),
+    radial-gradient(1.5px 1.5px at 45% 5%, rgba(255,215,0,0.3), transparent),
+    radial-gradient(2.5px 2.5px at 78% 60%, rgba(255,215,0,0.5), transparent),
+    radial-gradient(1px 1px at 25% 22%, rgba(255,215,0,0.4), transparent),
+    radial-gradient(2px 2px at 92% 40%, rgba(255,215,0,0.35), transparent),
+    radial-gradient(1.5px 1.5px at 5% 45%, rgba(255,215,0,0.45), transparent),
+    radial-gradient(2px 2px at 58% 35%, rgba(255,215,0,0.3), transparent),
+    radial-gradient(1px 1px at 85% 8%, rgba(255,215,0,0.5), transparent),
+    radial-gradient(2.5px 2.5px at 40% 75%, rgba(255,215,0,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 70% 95%, rgba(255,215,0,0.35), transparent);
+  animation: shimmer 5s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0%   { opacity: 0.55; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* ── 第二层金粉（闪烁较慢，增加层次感） ── */
+.auth-screen::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(3px 3px at 14% 28%, rgba(255,182,193,0.3), transparent),
+    radial-gradient(2px 2px at 33% 62%, rgba(255,182,193,0.25), transparent),
+    radial-gradient(2.5px 2.5px at 52% 15%, rgba(255,182,193,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 67% 48%, rgba(255,182,193,0.2), transparent),
+    radial-gradient(3px 3px at 83% 75%, rgba(255,182,193,0.3), transparent),
+    radial-gradient(2px 2px at 20% 80%, rgba(255,182,193,0.25), transparent),
+    radial-gradient(2.5px 2.5px at 45% 42%, rgba(255,182,193,0.2), transparent),
+    radial-gradient(1.5px 1.5px at 75% 22%, rgba(255,182,193,0.3), transparent),
+    radial-gradient(2px 2px at 8% 55%, rgba(255,182,193,0.25), transparent),
+    radial-gradient(2.5px 2.5px at 55% 85%, rgba(255,182,193,0.2), transparent),
+    radial-gradient(1.5px 1.5px at 90% 12%, rgba(255,182,193,0.3), transparent),
+    radial-gradient(2px 2px at 35% 95%, rgba(255,182,193,0.25), transparent);
+  animation: shimmerSlow 7s ease-in-out infinite alternate;
+}
+
+@keyframes shimmerSlow {
+  0%   { opacity: 0.3; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 0.4; }
+}
+
+.auth-card {
+  z-index: 1;
+  position: relative;
+}
+
+.auth-brand {
+  position: relative;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* ── Hello Kitty 漂浮装饰元素 ── */
+.auth-deco {
+  pointer-events: none;
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.7;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+
+.auth-brand > div:nth-child(1) .auth-deco { animation-delay: 0s; }
+.auth-brand > div:nth-child(2) .auth-deco { animation-delay: 0.5s; }
+.auth-brand > div:nth-child(3) .auth-deco { animation-delay: 1.2s; }
+.auth-brand > div:nth-child(4) .auth-deco { animation-delay: 0.8s; }
+.auth-brand > div:nth-child(5) .auth-deco { animation-delay: 0.3s; }
+.auth-brand > div:nth-child(6) .auth-deco { animation-delay: 1.8s; }
+
+.auth-logo {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(255,107,157,0.25));
+}
+
+.auth-brand h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  margin: 0 0 6px;
+  letter-spacing: 0.5px;
+}
+
+.auth-brand p {
+  font-size: 13px;
+  color: var(--text-3);
+  margin: 0;
+}
+
+.auth-card {
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 36px 40px;
+  width: 100%;
+  max-width: 500px;
+  min-height: 380px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: visible;
+  animation: authCardIn 0.3s ease-out;
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+/* ── User grid ── */
+
+.user-grid-wrap {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 8px 0;
+}
+
+.user-grid {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 12px 40px 18px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
+  scrollbar-width: thin;
+}
+
+.user-grid::-webkit-scrollbar { height: 4px; }
+.user-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Blur side cards when one card is actively hovered */
+.user-grid:has(.user-card-wrap:hover) .user-card-wrap:not(:hover) {
+  filter: blur(3px);
+  opacity: 0.55;
+  transition: filter 0.3s, opacity 0.3s;
+}
+
+.user-card-wrap {
+  position: relative;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  width: 160px;
+  z-index: 1;
+  transition: filter 0.3s, opacity 0.3s, z-index 0s;
+}
+
+.user-card-wrap:has(.user-btn:hover) {
+  z-index: 10;
+}
+
+.user-btn {
+  width: 100%;
+  height: 115px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: var(--shadow-sm);
+}
+
+.user-btn:hover {
+  border-color: var(--gold-primary);
+  background: var(--cat-tag-bg);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-hover);
+  position: relative;
+  z-index: 10;
+}
+
+.user-btn:active {
+  transform: scale(1.05);
+}
+
+.user-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.user-emoji.large { font-size: 52px; }
+
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── User display (password screen) ── */
+
+.auth-user-display {
+  text-align: center;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.auth-user-display h2 { margin-top: 10px; }
+
+/* ── Form fields ── */
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.auth-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.auth-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 16px;
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.auth-field input:focus {
+  border-color: var(--gold-primary);
+  background: var(--input-focus);
+}
+
+.auth-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin: -8px 0 12px;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  color: var(--gold-deep);
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .3s ease;
+  margin-top: 4px;
+  box-shadow: 0 2px 8px rgba(255,107,157,0.25);
+  letter-spacing: 0.3px;
+}
+
+.auth-btn:hover {
+  box-shadow: 0 4px 14px rgba(255,107,157,0.40);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.auth-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--gold-primary);
+  cursor: pointer;
+  padding: 8px 0 0;
+}
+
+.auth-link:hover { text-decoration: underline; }
+
+.auth-back {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+  line-height: 1;
+}
+
+.auth-back:hover {
+  background: var(--border-2);
+  color: var(--text);
+}
+
+/* ── Password eye toggle ── */
+
+.auth-pw-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--input-bg);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.auth-pw-wrap:focus-within {
+  border-color: var(--gold-primary);
+  background: var(--input-focus);
+}
+
+.auth-pw-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  padding: 15px 16px;
+  font-size: 16px;
+  color: var(--text);
+  box-shadow: none !important;
+}
+
+.auth-pw-eye {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-3);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  transition: color 0.15s;
+}
+
+.auth-pw-eye:hover { color: var(--text-2); }
+
+/* ── Delete account ── */
+
+.auth-delete-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 12px 0 0;
+  transition: color 0.2s;
+}
+
+.auth-delete-link:hover { color: #ef4444; }
+
+.auth-delete-warning {
+  font-size: 13px;
+  color: #ef4444;
+  text-align: center;
+  margin: -12px 0 18px;
+  padding: 10px 12px;
+  background: rgba(239,68,68,0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.auth-btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.30) !important;
+}
+
+.auth-btn-danger:hover {
+  box-shadow: 0 4px 14px rgba(239,68,68,0.45) !important;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+  .auth-brand {
+    margin-bottom: 18px;
+  }
+  .auth-logo {
+    font-size: 38px;
+  }
+  .auth-brand h1 {
+    font-size: 20px;
+  }
+  .user-card-wrap {
+    width: 130px;
+  }
+  .user-btn {
+    height: 96px;
+    padding: 12px 6px;
+  }
+  .user-emoji {
+    font-size: 26px;
+  }
+  .user-name {
+    font-size: 12px;
+  }
+  .auth-field input {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+}
+

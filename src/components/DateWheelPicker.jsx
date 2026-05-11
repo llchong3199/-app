@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import './DateWheelPicker.css'
 
 const ITEM_H = 44
@@ -52,6 +53,37 @@ function WheelCol({ items, value, onChange, format }) {
   )
 }
 
+export function MonthWheelPicker({ value, onChange, onClose }) {
+  const [y, m] = value.split('-').map(Number)
+  const [year, setYear]   = useState(y)
+  const [month, setMonth] = useState(m)
+
+  const years  = range(2020, 2035)
+  const months = range(1, 12)
+
+  function confirm() {
+    onChange(`${year}-${String(month).padStart(2, '0')}`)
+    onClose()
+  }
+
+  return createPortal(
+    <div className="dp-overlay" onClick={onClose}>
+      <div className="dp-panel" onClick={e => e.stopPropagation()}>
+        <div className="dp-header">
+          <button className="dp-cancel" onClick={onClose}>取消</button>
+          <span className="dp-title">选择月份</span>
+          <button className="dp-confirm" onClick={confirm}>确定</button>
+        </div>
+        <div className="dp-wheels">
+          <WheelCol items={years}  value={year}  onChange={setYear}  format={v => `${v}年`} />
+          <WheelCol items={months} value={month} onChange={setMonth} format={v => `${String(v).padStart(2, '0')}月`} />
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 export function DateWheelPicker({ value, onChange, onClose }) {
   const [y, m, d] = value.split('-').map(Number)
   const [year, setYear] = useState(y)
@@ -73,7 +105,7 @@ export function DateWheelPicker({ value, onChange, onClose }) {
     onClose()
   }
 
-  return (
+  return createPortal(
     <div className="dp-overlay" onClick={onClose}>
       <div className="dp-panel" onClick={e => e.stopPropagation()}>
         <div className="dp-header">
@@ -87,6 +119,7 @@ export function DateWheelPicker({ value, onChange, onClose }) {
           <WheelCol items={days} value={day} onChange={setDay} format={v => `${String(v).padStart(2, '0')}日`} />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

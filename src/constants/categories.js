@@ -10,23 +10,29 @@ export const CATEGORY_COLORS = {
 }
 
 export const CATEGORY_ICONS = {
-  '餐饮': '😋',   // 好吃到流口水
-  '交通': '😤',   // 堵车烦躁
-  '购物': '😍',   // 剁手上头
-  '娱乐': '😆',   // 快乐摆烂
-  '医疗': '🤒',   // 生病痛苦
-  '住房': '😌',   // 在家舒服
-  '教育': '🤓',   // 学习模式
-  '其他': '🤷',   // 说不清楚
+  '餐饮': '🍚',
+  '交通': '🚗',
+  '购物': '🛍️',
+  '娱乐': '🎢',
+  '医疗': '💉',
+  '住房': '🏠',
+  '教育': '🎓',
+  '其他': '🤷',
 }
 
 const DEFAULT_COLOR = '#6366f1'
 const DEFAULT_ICON = '💰'
+
+let _customIcons = {}
+
+export function setCustomIcons(map) {
+  _customIcons = map ?? {}
+}
 
 export function getCategoryColor(cat) {
   return CATEGORY_COLORS[cat] ?? DEFAULT_COLOR
 }
 
 export function getCategoryIcon(cat) {
-  return CATEGORY_ICONS[cat] ?? DEFAULT_ICON
+  return _customIcons[cat] ?? CATEGORY_ICONS[cat] ?? DEFAULT_ICON
 }

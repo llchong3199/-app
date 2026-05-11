@@ -1,0 +1,209 @@
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.settings-panel {
+  background: var(--surface);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px var(--border);
+  animation: settingsPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes settingsPopIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.settings-sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 36px 40px 0;
+  background: var(--surface);
+}
+
+.settings-content {
+  padding: 4px 40px 12px;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding: 4px 0 0;
+}
+
+.settings-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  margin: 0;
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.settings-close:hover { color: var(--text); background: var(--border-2); }
+
+.settings-close.save-mode {
+  color: #fff;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  box-shadow: 0 2px 8px rgba(255,107,157,0.4);
+}
+
+.settings-close.save-mode:hover {
+  box-shadow: 0 4px 14px rgba(255,107,157,0.5);
+  transform: scale(1.05);
+}
+
+.settings-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.settings-section:last-of-type { border-bottom: none; }
+
+.settings-section > label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 10px;
+}
+
+.settings-avatar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+.settings-avatar-btn:hover {
+  border-color: var(--gold-primary);
+  background: var(--cat-tag-bg);
+}
+
+.settings-avatar-hint {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.settings-row {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-field {
+  margin-bottom: 10px;
+}
+
+.settings-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.settings-input:focus {
+  border-color: var(--gold-primary);
+  background: var(--input-focus);
+}
+
+.settings-input:read-only {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.settings-save-btn {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-copper));
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.settings-save-btn:hover {
+  box-shadow: 0 4px 12px rgba(255,107,157,0.35);
+  transform: translateY(-1px);
+}
+
+.settings-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.settings-error {
+  font-size: 13px;
+  color: #ef4444;
+  margin: 8px 40px 0;
+}
+
+.settings-success {
+  font-size: 13px;
+  color: var(--accent-green);
+  margin: 8px 40px 0;
+}
+
+.settings-export-btn,
+.settings-import-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.settings-export-btn:hover,
+.settings-import-btn:hover {
+  border-color: var(--gold-primary);
+  color: var(--gold-deep);
+  box-shadow: 0 2px 8px rgba(255,107,157,0.2);
+}
+

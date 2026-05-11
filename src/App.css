@@ -1,96 +1,498 @@
 .app {
-  max-width: 860px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 16px 48px;
+  padding: 0 20px 48px;
 }
 
 .app-header {
   position: sticky;
   top: 0;
-  background: var(--bg);
-  padding: 24px 0 0;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   z-index: 10;
-  transition: background 0.3s;
+  box-sizing: border-box;
 }
 
-.header-content {
+/* ── 宽屏：header 撑满视口，kitty 浮在左侧留白 ── */
+@media (min-width: 1201px) {
+  .app-header {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+
+  /* kitty + 用户区绝对定位，不占高度 */
+  .header-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 20px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .header-title-wrap,
+  .header-user {
+    pointer-events: auto;
+  }
+
+}
+
+/* ── 窄屏（含 Safari 侧边栏）：正常文档流 ── */
+@media (max-width: 1200px) {
+  .header-content {
+    position: static;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px 0;
+  }
+
+  .header-nav {
+    padding-top: 6px;
+  }
+
+  .header-month-area {
+    display: none;
+  }
+}
+
+/* 所有尺寸共用的 header-nav 基础样式 */
+.header-nav {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+  padding: 36px 20px 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
   display: flex;
-  align-items: baseline;
-  gap: 16px;
-  margin-bottom: 16px;
+  align-items: center;
+  background-image: linear-gradient(to right, transparent 30px, rgba(255,107,157,0.35) 30px);
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
 }
 
 .app-header h1 {
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--gold-deep);
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.header-title-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 72px;
+}
+
+.header-kitty-bg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  transform: rotate(-30deg);
+  margin-top: 8px;
+  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.92) 32%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0) 74%);
+  mask-image: radial-gradient(circle, rgba(0,0,0,0.92) 32%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0) 74%);
+}
+
+.header-kitty-name {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.header-deco {
+  font-size: 24px;
+  line-height: 1;
+  animation: floatSlow 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 6px rgba(255,107,157,0.3));
+}
+
+.header-title-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 2px;
+  margin-top: 10px;
+}
+
+.header-month-area {
+  position: fixed;
+  left: 70px;
+  top: 128px;
+  pointer-events: none;
+  z-index: 9;
 }
 
 .month-total {
-  font-size: 15px;
-  color: #6366f1;
+  font-size: 16px;
+  color: var(--gold-primary);
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.header-user {
+  margin-left: auto;
+  margin-right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+
+.header-avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+}
+
+.header-avatar-btn:hover { opacity: 0.7; }
+
+.header-username {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.logout-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
 .tabs {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid var(--border-2);
-  margin-bottom: 24px;
+  padding-left: 24px;
 }
 
 .tab {
   background: none;
   border: none;
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 10px 22px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-2);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, transform 0.15s, font-weight 0.15s;
 }
 
 .tab:hover {
-  color: #6366f1;
+  color: var(--gold-primary);
+  font-weight: 700;
+  transform: scale(1.12);
 }
 
 .tab.active {
-  color: #6366f1;
-  border-bottom-color: #6366f1;
+  color: var(--gold-deep);
+  border-bottom-color: var(--gold-primary);
+  font-weight: 600;
 }
 
 .app-main {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 0 10px;
+}
+
+.record-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.record-left {
+  flex-shrink: 0;
+  position: sticky;
+  top: 90px;
+}
+
+.resize-handle {
+  flex-shrink: 0;
+  width: 20px;
+  align-self: stretch;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: var(--border-2);
+  border-radius: 2px;
+  transition: background 0.2s, width 0.2s;
+}
+
+.resize-handle:hover::before,
+.resize-handle:active::before {
+  background: var(--gold-primary);
+  width: 3px;
+}
+
+.resize-dots {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--border) 0px, var(--border) 3px,
+    transparent 3px, transparent 6px
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.resize-handle:hover .resize-dots {
+  opacity: 1;
+}
+
+.record-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 12px;
+}
+
+.record-list-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 20px 24px 0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 130px);
+  overflow: hidden;
+}
+
+.record-list-card .expense-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-primary) var(--border-2);
+}
+
+@media (max-width: 720px) {
+  .record-layout {
+    flex-direction: column;
+  }
+  .record-left {
+    position: static;
+    width: 100% !important;
+  }
+  .resize-handle {
+    display: none;
+  }
 }
 
 .list-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
-.list-header h2 {
+.list-header-title {
+  flex-shrink: 0;
   font-size: 17px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--gold-deep);
+  margin: 0;
+}
+
+.list-header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  padding: 4px 40px;
+}
+
+.month-nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 12px;
+  line-height: 1;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.month-nav-btn:hover {
+  color: var(--gold-primary);
+  background: var(--border-2);
+}
+
+.month-nav-label {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold-deep);
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.month-nav-label:hover {
+  color: var(--gold-primary);
+  background: var(--border-2);
 }
 
 .filter-select {
   padding: 7px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
   outline: none;
   background: var(--surface);
-  color: var(--text);
+  color: var(--gold-deep);
   cursor: pointer;
+  font-weight: 600;
   transition: border-color 0.2s;
 }
 
+.filter-select:hover {
+  border-color: var(--gold-primary);
+}
+
 .filter-select:focus {
-  border-color: #6366f1;
+  border-color: var(--gold-primary);
+}
+
+/* ══════════════════════════════════════
+   手机端响应式 (≤ 480px)
+══════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .app {
+    padding: 0 12px 32px;
+  }
+
+  /* Header */
+  .header-content {
+    gap: 8px;
+    padding: 6px 12px;
+  }
+  .header-kitty-bg {
+    width: 48px;
+    height: 48px;
+  }
+  .header-kitty-name {
+    font-size: 22px;
+  }
+  .app-header h1 {
+    font-size: 18px;
+  }
+  .month-total {
+    font-size: 11px;
+  }
+  .header-username {
+    display: none;
+  }
+  .header-deco {
+    font-size: 18px;
+  }
+
+
+  /* Tabs */
+  .tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* App main */
+  .app-main {
+    gap: 14px;
+  }
+
+  /* List header */
+  .list-header-title {
+    font-size: 14px;
+  }
+  .month-nav-label {
+    font-size: 12px;
+  }
+  .filter-select {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  /* Logout btn */
+  .logout-btn {
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+}
+
+/* ══════════════════════════════════════
+   平板端响应式 (481px – 700px)
+══════════════════════════════════════ */
+@media (max-width: 700px) and (min-width: 481px) {
+  .app {
+    padding: 0 16px 40px;
+  }
+  .header-kitty-bg {
+    width: 58px;
+    height: 58px;
+  }
+  .header-kitty-name {
+    font-size: 26px;
+  }
 }
